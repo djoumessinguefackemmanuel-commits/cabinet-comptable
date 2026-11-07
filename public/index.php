@@ -25,7 +25,11 @@ require_once BASE_PATH . '/config/database.php';
 
 if (APP_ENV === 'production') {
     $baseUrl = parse_url(BASE_URL);
-    if (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off') {
+    $forwardedProto = strtolower(explode(',', $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')[0]);
+    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || $forwardedProto === 'https';
+
+    if (!$isHttps) {
         $host = $baseUrl['host'] ?? '';
         $port = isset($baseUrl['port']) ? ':' . $baseUrl['port'] : '';
         if ($host === '') {

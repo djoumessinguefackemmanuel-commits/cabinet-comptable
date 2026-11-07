@@ -66,11 +66,19 @@ class JournalsSeeder
                 NOW(),
                 NOW()
             )
+        " . (DB_DRIVER === 'pgsql'
+            ? "
+            ON CONFLICT (company_id, code) DO UPDATE SET
+                name = EXCLUDED.name,
+                type = EXCLUDED.type,
+                is_active = 1,
+                updated_at = NOW()"
+            : "
             ON DUPLICATE KEY UPDATE
                 name = VALUES(name),
                 type = VALUES(type),
                 is_active = 1,
-                updated_at = NOW()
+                updated_at = NOW()") . "
         ";
 
         $statement = $pdo->prepare($sql);

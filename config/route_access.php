@@ -24,7 +24,7 @@ return [
     ['methods' => ['POST'], 'pattern' => '#^/accounting/reconciliation/.*$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT]],
     ['methods' => ['GET'], 'pattern' => '#^/taxes(?:/.*)?$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT, ROLE_ACCOUNTANT]],
     ['methods' => ['POST'], 'pattern' => '#^/taxes(?:/.*)?$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT]],
-    ['methods' => ['GET'], 'pattern' => '#^/reports/.*$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT, ROLE_ACCOUNTANT, ROLE_CLIENT]],
+    ['methods' => ['GET'], 'pattern' => '#^/reports(?:/.*)?$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT, ROLE_ACCOUNTANT, ROLE_CLIENT]],
     ['methods' => ['GET'], 'pattern' => '#^/documents(?:/.*)?$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT, ROLE_ACCOUNTANT, ROLE_CLIENT]],
     ['methods' => ['POST'], 'pattern' => '#^/documents/(?:upload|.*?/delete)$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT, ROLE_ACCOUNTANT, ROLE_CLIENT]],
     ['methods' => ['GET'], 'pattern' => '#^/invoices$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT, ROLE_ACCOUNTANT, ROLE_CLIENT]],

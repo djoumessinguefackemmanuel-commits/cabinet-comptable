@@ -46,9 +46,25 @@ define('PUBLIC_PATH', ROOT_PATH . '/public');
 define('STORAGE_PATH', ROOT_PATH . '/storage');
 
 // URL de base
+$detectedBaseUrl = null;
+if (!empty($_SERVER['HTTP_HOST'])) {
+    $forwardedProto = strtolower(explode(',', $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')[0]);
+    $scheme = $forwardedProto !== ''
+        ? $forwardedProto
+        : ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http');
+    $detectedBaseUrl = $scheme . '://' . $_SERVER['HTTP_HOST'];
+}
+
+// APP_URL (sans slash final) prioritaire ; sinon l'adresse de la requete.
+$configuredBaseUrl = app_env('APP_URL');
 define(
     'BASE_URL',
-    app_env('APP_URL', 'http://localhost/cabinet-comptable/public')
+    rtrim(
+        ($configuredBaseUrl !== null && $configuredBaseUrl !== '')
+            ? $configuredBaseUrl
+            : ($detectedBaseUrl ?? 'http://localhost/cabinet-comptable/public'),
+        '/'
+    )
 );
 if (
     APP_ENV === 'production'
@@ -98,5 +114,5 @@ if (APP_DEBUG) {
     error_reporting(0);
     ini_set('display_errors', '0');
     ini_set('log_errors', '1');
-    ini_set('error_log', STORAGE_PATH . '/logs/php-errors.log');
+    ini_set('error_log', 'php://stderr');
 }

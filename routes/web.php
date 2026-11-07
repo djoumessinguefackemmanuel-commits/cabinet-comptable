@@ -170,6 +170,10 @@ $router->post('/taxes/calculate', [TaxController::class, 'calculate']);
 |--------------------------------------------------------------------------
 */
 
+$router->get('/reports', function (): void {
+    header('Location: ' . url('reports/balance-sheet'));
+    exit;
+});
 $router->get('/reports/balance-sheet', [FinancialStatementController::class, 'balanceSheet']);
 $router->get('/reports/income-statement', [FinancialStatementController::class, 'incomeStatement']);
 $router->get('/reports/trial-balance', [FinancialStatementController::class, 'trialBalance']);

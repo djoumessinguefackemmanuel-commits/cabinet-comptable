@@ -33,8 +33,13 @@ class RolesSeeder
         $sql = "
             INSERT INTO roles (name, description)
             VALUES (:name, :description)
+        " . (DB_DRIVER === 'pgsql'
+            ? "
+            ON CONFLICT (name) DO UPDATE SET
+                description = EXCLUDED.description"
+            : "
             ON DUPLICATE KEY UPDATE
-                description = VALUES(description)
+                description = VALUES(description)") . "
         ";
 
         $statement = $pdo->prepare($sql);
