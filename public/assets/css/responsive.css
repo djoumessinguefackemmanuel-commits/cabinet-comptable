@@ -1,0 +1,350 @@
+
+/* =========================================================
+   CABINET COMPTABLE
+   Adaptation aux écrans (Responsive Design)
+   Fichier : public/assets/css/responsive.css
+   ========================================================= */
+
+/* 1. Grands écrans et ordinateurs portables */
+@media (max-width: 1400px) {
+    .page-content {
+        padding: 24px;
+    }
+
+    .dashboard-stats {
+        gap: 16px;
+    }
+
+    .stat-card {
+        padding: 17px;
+    }
+}
+
+/* 2. Écrans moyens */
+@media (max-width: 1200px) {
+    :root {
+        --sidebar-width: 230px;
+    }
+
+    .page-content {
+        padding: 20px;
+    }
+
+    .dashboard-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .accounting-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* 3. Tablettes */
+@media (max-width: 992px) {
+    :root {
+        --sidebar-width: 0px;
+        --navbar-height: 65px;
+    }
+
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .page-content {
+        padding: 20px;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -280px;
+        z-index: 1050;
+        width: 260px;
+        height: 100vh;
+        transition: left 0.3s ease;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1040;
+        display: none;
+        background: rgba(15, 30, 48, 0.45);
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+    }
+
+    .mobile-menu-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .dashboard-grid.equal-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .accounting-filters {
+        align-items: stretch;
+    }
+
+    .accounting-filter {
+        min-width: 180px;
+    }
+}
+
+/* 4. Téléphones et petits écrans */
+@media (max-width: 768px) {
+    body {
+        font-size: 13px;
+    }
+
+    .page-content {
+        padding: 16px 12px;
+    }
+
+    .page-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .page-title {
+        font-size: 21px;
+    }
+
+    .page-header .btn {
+        width: 100%;
+    }
+
+    .dashboard-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .stat-card {
+        gap: 10px;
+        min-height: 100px;
+        padding: 13px;
+    }
+
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 17px;
+    }
+
+    .stat-value {
+        font-size: 19px;
+    }
+
+    .stat-label {
+        font-size: 11px;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .card-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .card-body {
+        padding: 15px;
+    }
+
+    .accounting-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .accounting-summary-card {
+        padding: 14px;
+    }
+
+    .accounting-summary-card strong {
+        font-size: 18px;
+    }
+
+    .accounting-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .accounting-filter {
+        width: 100%;
+        min-width: 100%;
+    }
+
+    .accounting-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .accounting-toolbar-actions {
+        width: 100%;
+    }
+
+    .accounting-toolbar-actions .btn {
+        flex: 1;
+    }
+
+    .accounting-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .accounting-form-grid .full-width {
+        grid-column: auto;
+    }
+
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-container {
+        grid-template-columns: 1fr;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table,
+    .accounts-table,
+    .journals-table,
+    .entries-table,
+    .ledger-table,
+    .balance-table {
+        min-width: 650px;
+    }
+}
+
+/* 5. Petits téléphones */
+@media (max-width: 576px) {
+    .page-content {
+        padding: 13px 10px;
+    }
+
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-card {
+        min-height: 90px;
+    }
+
+    .accounting-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-welcome {
+        padding: 16px;
+    }
+
+    .dashboard-welcome h2 {
+        font-size: 18px;
+    }
+
+    .dashboard-welcome p {
+        font-size: 12px;
+    }
+
+    .accounting-header h2 {
+        font-size: 19px;
+    }
+
+    .accounting-form {
+        padding: 14px;
+    }
+
+    .accounting-form-actions {
+        flex-direction: column;
+    }
+
+    .accounting-form-actions .btn {
+        width: 100%;
+    }
+
+    .actions {
+        gap: 5px;
+    }
+
+    .actions .btn {
+        padding: 6px 9px;
+    }
+
+    .pagination {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .auth-page {
+        padding: 12px;
+    }
+
+    .auth-form-side {
+        padding: 25px 18px;
+    }
+
+    .app-footer {
+        padding: 13px 10px;
+        font-size: 10px;
+    }
+}
+
+/* 6. Très petits téléphones */
+@media (max-width: 380px) {
+    .page-title {
+        font-size: 18px;
+    }
+
+    .stat-card {
+        gap: 9px;
+        padding: 11px;
+    }
+
+    .stat-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 15px;
+    }
+
+    .stat-value {
+        font-size: 17px;
+    }
+
+    .btn {
+        padding: 8px 11px;
+        font-size: 12px;
+    }
+
+    .auth-heading h2 {
+        font-size: 20px;
+    }
+}
+
+/* 7. Préférence de réduction des animations */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

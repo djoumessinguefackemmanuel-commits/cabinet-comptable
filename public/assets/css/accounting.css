@@ -1,0 +1,531 @@
+
+/* =========================================================
+   CABINET COMPTABLE
+   Styles du module comptable
+   Fichier : public/assets/css/accounting.css
+   ========================================================= */
+
+/* 1. En-têtes des modules comptables */
+.accounting-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 22px;
+}
+
+.accounting-header-info {
+    flex: 1;
+    min-width: 220px;
+}
+
+.accounting-header h2 {
+    margin-bottom: 5px;
+    color: #173b63;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.accounting-header p {
+    margin: 0;
+    color: #788596;
+    font-size: 13px;
+}
+
+/* 2. Filtres de recherche */
+.accounting-filters {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 18px;
+    margin-bottom: 20px;
+    background: #ffffff;
+    border: 1px solid #e4e8ef;
+    border-radius: 10px;
+    box-shadow: 0 3px 15px rgba(20, 42, 68, 0.04);
+}
+
+.accounting-filter {
+    flex: 1;
+    min-width: 160px;
+}
+
+.accounting-filter label {
+    display: block;
+    margin-bottom: 6px;
+    color: #465468;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.accounting-filter input,
+.accounting-filter select {
+    width: 100%;
+    min-height: 40px;
+    padding: 8px 11px;
+    border: 1px solid #dce2ea;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #263445;
+    outline: none;
+}
+
+.accounting-filter input:focus,
+.accounting-filter select:focus {
+    border-color: #173b63;
+    box-shadow: 0 0 0 3px rgba(23, 59, 99, 0.09);
+}
+
+/* 3. Cartes récapitulatives comptables */
+.accounting-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.accounting-summary-card {
+    padding: 18px;
+    background: #ffffff;
+    border: 1px solid #e4e8ef;
+    border-radius: 9px;
+    box-shadow: 0 3px 15px rgba(20, 42, 68, 0.05);
+}
+
+.accounting-summary-card span {
+    display: block;
+    color: #788596;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.accounting-summary-card strong {
+    display: block;
+    margin-top: 8px;
+    color: #173b63;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.accounting-summary-card.debit strong {
+    color: #0d8aa8;
+}
+
+.accounting-summary-card.credit strong {
+    color: #198754;
+}
+
+.accounting-summary-card.balance strong {
+    color: #173b63;
+}
+
+/* 4. Tableau des comptes */
+.accounts-table,
+.journals-table,
+.entries-table,
+.ledger-table,
+.balance-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+}
+
+.accounts-table th,
+.journals-table th,
+.entries-table th,
+.ledger-table th,
+.balance-table th {
+    padding: 12px 14px;
+    background: #f3f6fa;
+    border-bottom: 1px solid #e1e6ed;
+    color: #526176;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.accounts-table td,
+.journals-table td,
+.entries-table td,
+.ledger-table td,
+.balance-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #edf0f4;
+    color: #465468;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+.accounts-table tbody tr:hover,
+.journals-table tbody tr:hover,
+.entries-table tbody tr:hover,
+.ledger-table tbody tr:hover,
+.balance-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+/* 5. Numéros et libellés des comptes */
+.account-number {
+    color: #173b63;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.account-name {
+    color: #35445a;
+    font-weight: 600;
+}
+
+.account-class {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 25px;
+    padding: 0 7px;
+    border-radius: 5px;
+    background: #eaf1f8;
+    color: #173b63;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* 6. Formulaires comptables */
+.accounting-form {
+    padding: 22px;
+    background: #ffffff;
+    border: 1px solid #e4e8ef;
+    border-radius: 10px;
+    box-shadow: 0 3px 15px rgba(20, 42, 68, 0.05);
+}
+
+.accounting-form-title {
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e9edf2;
+    color: #173b63;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.accounting-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.accounting-form-grid .full-width {
+    grid-column: 1 / -1;
+}
+
+.accounting-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 20px;
+    margin-top: 20px;
+    border-top: 1px solid #e9edf2;
+}
+
+/* 7. Écritures comptables */
+.entry-reference {
+    color: #173b63;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.entry-description {
+    color: #465468;
+    font-size: 12px;
+}
+
+.entry-lines {
+    width: 100%;
+    margin-top: 18px;
+    border: 1px solid #e4e8ef;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+.entry-lines table {
+    width: 100%;
+    min-width: 650px;
+    border-collapse: collapse;
+}
+
+.entry-lines th {
+    padding: 12px;
+    background: #f3f6fa;
+    color: #526176;
+    font-size: 11px;
+    text-align: left;
+}
+
+.entry-lines td {
+    padding: 10px;
+    border-top: 1px solid #edf0f4;
+}
+
+.entry-lines input,
+.entry-lines select {
+    width: 100%;
+    min-width: 90px;
+    min-height: 36px;
+    padding: 7px;
+    border: 1px solid #dce2ea;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+/* 8. Montants débit et crédit */
+.amount {
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.amount-debit {
+    color: #0d8aa8;
+    font-weight: 600;
+}
+
+.amount-credit {
+    color: #198754;
+    font-weight: 600;
+}
+
+.amount-total {
+    color: #173b63;
+    font-weight: 700;
+}
+
+/* 9. Totaux des écritures */
+.entry-totals {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 18px;
+}
+
+.entry-totals-box {
+    width: 100%;
+    max-width: 380px;
+    padding: 16px;
+    background: #f7f9fc;
+    border: 1px solid #e4e8ef;
+    border-radius: 8px;
+}
+
+.entry-total-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 7px 0;
+    color: #526176;
+    font-size: 12px;
+}
+
+.entry-total-row strong {
+    color: #173b63;
+    font-size: 13px;
+}
+
+.entry-total-row.grand-total {
+    padding-top: 12px;
+    margin-top: 7px;
+    border-top: 1px solid #dce2ea;
+    color: #173b63;
+    font-weight: 700;
+}
+
+/* 10. Équilibre comptable */
+.balance-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.balance-status.balanced {
+    background: #e8f5ee;
+    color: #198754;
+}
+
+.balance-status.unbalanced {
+    background: #fbeaec;
+    color: #dc3545;
+}
+
+/* 11. Lignes de totaux dans les états */
+.table-total-row {
+    background: #edf2f8;
+    font-weight: 700;
+}
+
+.table-total-row td {
+    color: #173b63;
+    border-top: 2px solid #cbd5e1;
+}
+
+.table-subtotal-row {
+    background: #f7f9fc;
+    font-weight: 600;
+}
+
+.table-subtotal-row td {
+    color: #35445a;
+}
+
+/* 12. Grand livre */
+.ledger-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 17px 20px;
+    background: #f7f9fc;
+    border-bottom: 1px solid #e4e8ef;
+}
+
+.ledger-header h3 {
+    margin: 0;
+    color: #173b63;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.ledger-account-info {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 18px;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.ledger-balance {
+    color: #173b63;
+    font-weight: 700;
+}
+
+/* 13. Barre d'outils */
+.accounting-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.accounting-toolbar-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* 14. Séparateurs et titres de groupes */
+.account-group-title {
+    padding: 12px 14px;
+    background: #edf2f8;
+    border-left: 3px solid #173b63;
+    color: #173b63;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* 15. Impression des documents comptables */
+@media print {
+    body {
+        background: #ffffff;
+        color: #000000;
+    }
+
+    .accounting-filters,
+    .accounting-toolbar,
+    .accounting-toolbar-actions,
+    .accounting-form-actions,
+    .btn {
+        display: none !important;
+    }
+
+    .accounting-form,
+    .card {
+        border: none;
+        box-shadow: none;
+    }
+
+    .accounts-table th,
+    .journals-table th,
+    .entries-table th,
+    .ledger-table th,
+    .balance-table th {
+        background: #eeeeee !important;
+        color: #000000;
+    }
+}
+
+/* 16. Responsive */
+@media (max-width: 992px) {
+    .accounting-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .accounting-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .accounting-form-grid .full-width {
+        grid-column: auto;
+    }
+
+    .accounting-header {
+        align-items: flex-start;
+    }
+
+    .accounting-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .accounting-toolbar-actions {
+        width: 100%;
+    }
+
+    .accounting-toolbar-actions .btn {
+        flex: 1;
+    }
+}
+
+@media (max-width: 576px) {
+    .accounting-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .accounting-form {
+        padding: 15px;
+    }
+
+    .accounting-filters {
+        padding: 14px;
+    }
+
+    .accounting-filter {
+        min-width: 100%;
+    }
+
+    .entry-totals-box {
+        max-width: 100%;
+    }
+}
