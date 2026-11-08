@@ -1,6 +1,0 @@
-Options -Indexes
-RewriteEngine On
-
-# Le dossier public est l'unique racine HTTP autorisée.
-RewriteRule ^public(?:/|$) - [L,NC]
-RewriteRule ^ - [F,L]

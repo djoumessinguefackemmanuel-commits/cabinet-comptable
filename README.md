@@ -186,9 +186,9 @@ Pour plus de détails, consulter `docs/installation.md`.
 Si le seeder administrateur a été exécuté correctement, les identifiants initiaux prévus sont :
 
 - Email : `admin@cabinet-comptable.local`
-- Mot de passe : `Admin@12345`
+- Mot de passe : généré aléatoirement et affiché une seule fois par `php database/seed.php` (ou défini via la variable d'environnement `ADMIN_INITIAL_PASSWORD`, 12 caractères minimum).
 
-**Important :** modifier ce mot de passe avant toute utilisation en production.
+**Important :** changer ce mot de passe dès la première connexion.
 
 ## 8. Documentation
 

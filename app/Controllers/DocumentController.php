@@ -126,6 +126,7 @@ class DocumentController extends Controller
         }
 
         header('Content-Type: application/octet-stream');
+        header('X-Content-Type-Options: nosniff');
         header(
             'Content-Disposition: attachment; filename="' .
             basename($document['file_name']) . '"'

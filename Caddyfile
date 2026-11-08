@@ -2,6 +2,15 @@
     root * /app/public
     encode zstd gzip
 
+    header {
+        X-Frame-Options "DENY"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+        -X-Powered-By
+        -Server
+    }
+
     php_server {
         try_files {path} index.php
     }

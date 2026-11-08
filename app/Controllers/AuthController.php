@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Core\Auth;
 use App\Core\Session;
+use App\Services\LoginThrottle;
 use App\Services\PasswordResetService;
 use App\Validators\AuthValidator;
 
@@ -51,7 +52,20 @@ class AuthController extends Controller
             return;
         }
 
+        if (LoginThrottle::isBlocked($data['email'])) {
+            http_response_code(429);
+            $this->render('auth.login', [
+                'title' => 'Connexion',
+                'errors' => [
+                    'Trop de tentatives de connexion. Réessayez dans quelques minutes.'
+                ],
+                'email' => $data['email']
+            ], 'layouts.auth');
+            return;
+        }
+
         if (!Auth::login($data)) {
+            LoginThrottle::recordFailure($data['email']);
             $this->render('auth.login', [
                 'title' => 'Connexion',
                 'errors' => [
@@ -61,6 +75,8 @@ class AuthController extends Controller
             ], 'layouts.auth');
             return;
         }
+
+        LoginThrottle::clear($data['email']);
 
         $this->redirectByRole();
     }

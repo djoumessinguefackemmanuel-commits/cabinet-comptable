@@ -22,6 +22,17 @@ class Session
             ]);
 
             ini_set('session.use_strict_mode', '1');
+            ini_set('session.gc_maxlifetime', (string) SESSION_LIFETIME);
+
+            // Sessions en base de données (hébergement serverless : Vercel, etc.).
+            if (strtolower((string) app_env('SESSION_DRIVER', 'files')) === 'database') {
+                try {
+                    session_set_save_handler(new DatabaseSessionHandler(Database::connect()), true);
+                } catch (\Throwable $exception) {
+                    error_log('Session en base indisponible : ' . $exception->getMessage());
+                }
+            }
+
             session_start();
         }
     }

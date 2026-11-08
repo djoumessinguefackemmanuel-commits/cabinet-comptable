@@ -160,9 +160,9 @@ Il initialise les composants nécessaires et lance le traitement des requêtes.
 Le seeder `database/seeders/AdminSeeder.php`, exécuté par `php database/seed.php`, crée ce compte s'il n'existe pas déjà :
 
 - Adresse électronique : `admin@cabinet-comptable.local`
-- Mot de passe : `Admin@12345`
+- Mot de passe : généré aléatoirement et affiché une seule fois dans la console (ou défini via `ADMIN_INITIAL_PASSWORD`, 12 caractères minimum).
 
-Ces identifiants sont réservés aux tests locaux. Le compte n'est pas créé par le seul import du fichier SQL ; le seeder doit être exécuté et la base doit être configurée. Si l'adresse existe déjà, le seeder ne remplace pas son mot de passe.
+Ce compte est réservé à la première configuration. Le compte n'est pas créé par le seul import du fichier SQL ; le seeder doit être exécuté et la base doit être configurée. Si l'adresse existe déjà, le seeder ne remplace pas son mot de passe.
 
 Il est indispensable de modifier le mot de passe avant toute utilisation réelle.
 

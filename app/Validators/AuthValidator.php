@@ -40,7 +40,7 @@ use App\Core\Validator;class AuthValidator
         $validator->email('email', $data['email'] ?? '');
 
         $validator->required('password', $data['password'] ?? '');
-        $validator->min('password', $data['password'] ?? '', 8);
+        $validator->min('password', $data['password'] ?? '', 10);
 
         $validator->required(
             'password_confirmation',
@@ -87,7 +87,7 @@ use App\Core\Validator;class AuthValidator
         $validator = new Validator();
 
         $validator->required('password', $data['password'] ?? '');
-        $validator->min('password', $data['password'] ?? '', 8);
+        $validator->min('password', $data['password'] ?? '', 10);
 
         $validator->required(
             'password_confirmation',

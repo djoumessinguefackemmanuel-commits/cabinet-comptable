@@ -348,3 +348,314 @@
         transition-duration: 0.01ms !important;
     }
 }
+
+
+/* =========================================================
+   8. Améliorations d'adaptation (téléphone, tablette, grands écrans)
+   ========================================================= */
+
+/* 8.1 Fondations : rien ne doit dépasser de l'écran */
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+img,
+svg,
+video,
+canvas {
+    max-width: 100%;
+}
+
+img,
+video {
+    height: auto;
+}
+
+.main-content,
+.page-content,
+.card,
+.card-body {
+    min-width: 0;
+}
+
+.page-content,
+.card-body,
+.table td,
+.table th {
+    overflow-wrap: break-word;
+}
+
+/* Tableaux : défilement horizontal avec indicateur d'ombre sur les bords */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    background:
+        linear-gradient(to right, #fff 30%, rgba(255, 255, 255, 0)) left center / 40px 100% no-repeat local,
+        linear-gradient(to left, #fff 30%, rgba(255, 255, 255, 0)) right center / 40px 100% no-repeat local,
+        radial-gradient(farthest-side at 0 50%, rgba(15, 30, 48, .22), rgba(15, 30, 48, 0)) left center / 12px 100% no-repeat scroll,
+        radial-gradient(farthest-side at 100% 50%, rgba(15, 30, 48, .22), rgba(15, 30, 48, 0)) right center / 12px 100% no-repeat scroll;
+}
+
+/* 8.2 Très grands écrans : largeur de lecture confortable */
+@media (min-width: 1600px) {
+    .page-content {
+        max-width: 1560px;
+        margin-inline: auto;
+    }
+}
+
+/* 8.3 Tablettes et en dessous : menu latéral en tiroir */
+@media (max-width: 992px) {
+    .sidebar {
+        height: 100vh;
+        height: 100dvh;
+        max-width: 85vw;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        visibility: hidden;
+        transition: left .3s ease, visibility 0s linear .3s;
+    }
+
+    .sidebar.active {
+        visibility: visible;
+        box-shadow: 8px 0 30px rgba(15, 30, 48, .25);
+        transition: left .3s ease, visibility 0s;
+    }
+
+    body.sidebar-open {
+        overflow: hidden;
+    }
+
+    .sidebar-link {
+        min-height: 44px;
+    }
+
+    .navbar-top {
+        padding-left: max(14px, env(safe-area-inset-left));
+        padding-right: max(14px, env(safe-area-inset-right));
+    }
+
+    .page-content {
+        padding-left: max(20px, env(safe-area-inset-left));
+        padding-right: max(20px, env(safe-area-inset-right));
+    }
+
+    /* Lignes de grille : l'espacement ne doit pas dépasser du conteneur */
+    .page-content .row {
+        --bs-gutter-x: 1rem;
+    }
+}
+
+/* 8.4 Téléphones */
+@media (max-width: 768px) {
+    /* En-têtes de page : titre au-dessus, boutons pleine largeur */
+    .container-fluid > .d-flex.justify-content-between,
+    .container-fluid > .d-flex.justify-content-between.align-items-center,
+    .page-header,
+    .card-header.d-flex {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .container-fluid > .d-flex.justify-content-between,
+    .card-header.d-flex.justify-content-between {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+
+    .container-fluid > .d-flex.justify-content-between > .btn,
+    .container-fluid > .d-flex.justify-content-between > a.btn,
+    .card-header.d-flex.justify-content-between > .btn,
+    .card-header.d-flex.justify-content-between > a.btn {
+        width: 100%;
+    }
+
+    /* Groupes de boutons et actions : retour à la ligne */
+    .d-flex.gap-2,
+    .btn-toolbar,
+    .actions {
+        flex-wrap: wrap;
+    }
+
+    /* Champs : 16 px évite le zoom automatique sur iPhone, cibles tactiles confortables */
+    .form-control,
+    .form-select,
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="date"],
+    input[type="tel"],
+    input[type="search"],
+    select,
+    textarea {
+        min-height: 44px;
+        font-size: 16px;
+    }
+
+    .btn {
+        min-height: 40px;
+    }
+
+    .btn-sm {
+        min-height: 36px;
+    }
+
+    .input-group {
+        flex-wrap: nowrap;
+    }
+
+    /* Fenêtres modales */
+    .modal-dialog {
+        margin: .5rem;
+    }
+
+    .modal-footer {
+        flex-wrap: wrap;
+    }
+
+    .modal-footer .btn {
+        flex: 1 1 140px;
+    }
+
+    /* Tableaux : défilement plus fluide et cellules plus compactes */
+    .table th,
+    .table td {
+        padding: 9px 10px;
+        font-size: 13px;
+    }
+
+    .table-responsive > .table {
+        margin-bottom: 0;
+    }
+
+    .nav-tabs,
+    .nav-pills {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Pied de page et barre du haut */
+    .navbar-user-info {
+        display: none;
+    }
+
+    .navbar-left,
+    .navbar-right {
+        gap: 10px;
+    }
+
+    .navbar-page-title {
+        min-width: 0;
+    }
+
+    .navbar-page-title span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .app-footer {
+        padding-bottom: max(13px, env(safe-area-inset-bottom));
+    }
+}
+
+/* 8.5 Petits téléphones */
+@media (max-width: 576px) {
+    .page-content {
+        padding-left: max(10px, env(safe-area-inset-left));
+        padding-right: max(10px, env(safe-area-inset-right));
+    }
+
+    .page-content .row {
+        --bs-gutter-x: .75rem;
+    }
+
+    .container-fluid {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .stat-card {
+        min-height: 0;
+    }
+
+    .card-header,
+    .card-body,
+    .card-footer {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    h1,
+    .h1 {
+        font-size: 1.5rem;
+    }
+
+    h2,
+    .h2 {
+        font-size: 1.3rem;
+    }
+
+    h3,
+    .h3 {
+        font-size: 1.2rem;
+    }
+
+    .breadcrumb {
+        flex-wrap: wrap;
+    }
+
+    .badge {
+        white-space: normal;
+    }
+}
+
+/* 8.6 Téléphones en mode paysage : barre du haut plus basse */
+@media (max-height: 500px) and (orientation: landscape) {
+    :root {
+        --navbar-height: 54px;
+    }
+
+    .sidebar-link {
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+}
+
+/* 8.7 Écrans tactiles : cibles de taille suffisante */
+@media (hover: none) and (pointer: coarse) {
+    .navbar-icon,
+    .navbar-logout,
+    .sidebar-toggle {
+        width: 42px;
+        height: 42px;
+    }
+
+    .pagination .page-link {
+        min-width: 40px;
+        min-height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* 8.8 Indication de défilement des tableaux sur petit écran */
+@media (max-width: 576px) {
+    .table-responsive::before {
+        content: "Faites glisser le tableau pour voir toutes les colonnes \2192";
+        position: sticky;
+        left: 0;
+        display: block;
+        width: calc(100vw - 52px);
+        padding: 0 2px 8px;
+        color: #7b8794;
+        font-size: 11px;
+        line-height: 1.3;
+    }
+}

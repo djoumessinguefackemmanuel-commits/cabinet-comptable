@@ -33,7 +33,7 @@ class UserValidator
         }
 
         $validator->required('password', $data['password'] ?? '');
-        $validator->min('password', $data['password'] ?? '', 8);
+        $validator->min('password', $data['password'] ?? '', 10);
 
         $validator->required('password_confirmation', $data['password_confirmation'] ?? '');
         if (($data['password'] ?? '') !== ($data['password_confirmation'] ?? '')) {
@@ -92,7 +92,7 @@ class UserValidator
             isset($data['password']) &&
             $data['password'] !== ''
         ) {
-            $validator->min('password', $data['password'], 8);
+            $validator->min('password', $data['password'], 10);
         }
 
         return [
