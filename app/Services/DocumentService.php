@@ -48,26 +48,15 @@ class DocumentService
             );
         }
 
-        $storageDirectory = STORAGE_PATH . '/documents';
-
-        if (!is_dir($storageDirectory)) {
-
-            if (!mkdir($storageDirectory, 0755, true)) {
-                throw new \RuntimeException(
-                    'Impossible de créer le dossier de stockage.'
-                );
-            }
-        }
-
-        $fileName = bin2hex(random_bytes(16)) . '.' . $extension;
-
-        $destination = $storageDirectory . '/' . $fileName;
-
-        if (!move_uploaded_file($file['tmp_name'], $destination)) {
+        if (!is_uploaded_file($file['tmp_name'])) {
             throw new \RuntimeException(
                 'Impossible d\'enregistrer le document.'
             );
         }
+
+        $fileName = bin2hex(random_bytes(16)) . '.' . $extension;
+
+        FileStore::put($fileName, $file['tmp_name']);
 
         $sql = "
             INSERT INTO documents (
@@ -119,9 +108,7 @@ class DocumentService
 
         } catch (\Throwable $exception) {
 
-            if (is_file($destination)) {
-                unlink($destination);
-            }
+            FileStore::delete($fileName);
 
             throw $exception;
         }
@@ -183,13 +170,7 @@ class DocumentService
 
         if ($deleted) {
 
-            $filePath = STORAGE_PATH
-                      . '/documents/'
-                      . basename($document['file_name']);
-
-            if (is_file($filePath)) {
-                unlink($filePath);
-            }
+            FileStore::delete($document['file_name']);
         }
 
         return $deleted;

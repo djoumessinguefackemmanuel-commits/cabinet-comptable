@@ -9,6 +9,7 @@ use App\Models\Company;
 use App\Models\Document;
 use App\Models\Exercise;
 use App\Services\DocumentService;
+use App\Services\FileStore;
 
 class DocumentController extends Controller
 {
@@ -118,9 +119,9 @@ class DocumentController extends Controller
             return;
         }
 
-        $filePath = STORAGE_PATH . '/documents/' . basename($document['file_name']);
+        $content = FileStore::read($document['file_name']);
 
-        if (!is_file($filePath)) {
+        if ($content === null) {
             $this->renderError(404);
             return;
         }
@@ -131,9 +132,9 @@ class DocumentController extends Controller
             'Content-Disposition: attachment; filename="' .
             basename($document['file_name']) . '"'
         );
-        header('Content-Length: ' . filesize($filePath));
+        header('Content-Length: ' . strlen($content));
 
-        readfile($filePath);
+        echo $content;
         exit;
     }
 

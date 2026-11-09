@@ -294,3 +294,28 @@ ALTER TABLE taxes ADD COLUMN IF NOT EXISTS tax_period VARCHAR(100) NULL;
 ALTER TABLE taxes ADD COLUMN IF NOT EXISTS due_date DATE NULL;
 CREATE INDEX IF NOT EXISTS idx_taxes_due_date ON taxes (due_date);
 
+
+-- Stockage des fichiers dans la base (STORAGE_DRIVER=database)
+CREATE TABLE IF NOT EXISTS document_files (
+    file_name VARCHAR(255) PRIMARY KEY,
+    content BYTEA NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tentatives de connexion (limitation anti force brute)
+CREATE TABLE IF NOT EXISTS login_attempts (
+    id BIGSERIAL PRIMARY KEY,
+    email_hash CHAR(64) NOT NULL,
+    ip_hash CHAR(64) NOT NULL,
+    attempted_at TIMESTAMP NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_login_attempts_email ON login_attempts (email_hash, attempted_at);
+CREATE INDEX IF NOT EXISTS idx_login_attempts_ip ON login_attempts (ip_hash, attempted_at);
+
+-- Sessions PHP en base (SESSION_DRIVER=database)
+CREATE TABLE IF NOT EXISTS app_sessions (
+    id VARCHAR(128) PRIMARY KEY,
+    payload TEXT NOT NULL,
+    expires_at BIGINT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_app_sessions_expires ON app_sessions (expires_at);

@@ -1,3 +1,4 @@
+<?php use App\Core\Auth; ?>
 <div class="page-header">
     <div><h1 class="page-title">Documents</h1><p class="page-subtitle">Déposez et retrouvez les pièces justificatives du cabinet.</p></div>
 </div>
