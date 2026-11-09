@@ -1,6 +1,7 @@
 <?php
 
 use App\Controllers\AuthController;
+use App\Controllers\AccountSecurityController;
 use App\Controllers\DashboardController;
 use App\Controllers\UserController;
 use App\Controllers\RoleController;
@@ -31,6 +32,8 @@ use App\Controllers\SupportController;
 $router->get('/', [AuthController::class, 'showLogin']);
 $router->get('/login', [AuthController::class, 'showLogin']);
 $router->post('/login', [AuthController::class, 'login']);
+$router->get('/login/2fa', [AuthController::class, 'showTwoFactor']);
+$router->post('/login/2fa', [AuthController::class, 'verifyTwoFactor']);
 
 $router->get('/forgot-password', [AuthController::class, 'showForgotPassword']);
 $router->post('/forgot-password', [AuthController::class, 'forgotPassword']);
@@ -42,6 +45,17 @@ $router->get('/contact-admin', [SupportController::class, 'showContactForm']);
 $router->post('/contact-admin', [SupportController::class, 'submitContactRequest']);
 
 $router->post('/logout', [AuthController::class, 'logout']);
+
+/*
+|--------------------------------------------------------------------------
+| Sécurité du compte (double authentification)
+|--------------------------------------------------------------------------
+*/
+
+$router->get('/account/security', [AccountSecurityController::class, 'show']);
+$router->post('/account/security/enable', [AccountSecurityController::class, 'enable']);
+$router->post('/account/security/disable', [AccountSecurityController::class, 'disable']);
+$router->post('/account/security/recovery-codes', [AccountSecurityController::class, 'regenerateCodes']);
 
 /*
 |--------------------------------------------------------------------------
@@ -68,6 +82,7 @@ $router->get('/users/{id}/edit', [UserController::class, 'edit']);
 $router->post('/users/{id}/update', [UserController::class, 'update']);
 $router->post('/users/{id}/status', [UserController::class, 'updateStatus']);
 $router->post('/users/{id}/delete', [UserController::class, 'delete']);
+$router->post('/users/{id}/two-factor/reset', [AccountSecurityController::class, 'adminReset']);
 
 $router->get('/roles', [RoleController::class, 'index']);
 $router->get('/roles/{id}', [RoleController::class, 'show']);

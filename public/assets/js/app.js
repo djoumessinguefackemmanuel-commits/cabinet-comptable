@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeDropdowns();
     initializeTooltips();
     initializeCurrentYear();
+    initializeExportMenu();
 });
 
 /* 2. Gestion du menu latéral */
@@ -246,4 +247,35 @@ function formatDate(dateValue) {
         month: '2-digit',
         year: 'numeric'
     }).format(date);
+}
+
+
+/* 9. Export CSV / Excel / PDF de la page affichée */
+function initializeExportMenu() {
+    const menu = document.getElementById('exportMenu');
+
+    if (!menu) {
+        return;
+    }
+
+    const hasData = Array.from(document.querySelectorAll('.page-content table')).some(function (table) {
+        // Un tableau de saisie (champs de formulaire) n'est pas exportable.
+        return table.querySelectorAll('tbody tr').length > 0
+            && !table.querySelector('input:not([type="hidden"]):not([type="checkbox"]), select, textarea');
+    });
+
+    if (!hasData) {
+        return;
+    }
+
+    menu.hidden = false;
+
+    menu.querySelectorAll('[data-export]').forEach(function (link) {
+        link.addEventListener('click', function (event) {
+            event.preventDefault();
+            const url = new URL(window.location.href);
+            url.searchParams.set('export', link.dataset.export);
+            window.location.href = url.toString();
+        });
+    });
 }

@@ -28,8 +28,23 @@ $currentUser = Auth::user();
 
     <div class="navbar-right">
 
+        <div class="dropdown export-menu" id="exportMenu" hidden>
+            <button type="button" class="navbar-icon" data-bs-toggle="dropdown" aria-expanded="false" title="Exporter cette page" aria-label="Exporter cette page">
+                <i class="fas fa-download"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#" data-export="pdf"><i class="fas fa-file-pdf me-2 text-danger"></i>PDF</a></li>
+                <li><a class="dropdown-item" href="#" data-export="xlsx"><i class="fas fa-file-excel me-2 text-success"></i>Excel (.xlsx)</a></li>
+                <li><a class="dropdown-item" href="#" data-export="csv"><i class="fas fa-file-csv me-2 text-secondary"></i>CSV</a></li>
+            </ul>
+        </div>
+
         <a href="<?= url('notifications') ?>" class="navbar-icon notification-link" title="Notifications">
             <i class="fas fa-bell"></i>
+        </a>
+
+        <a href="<?= url('account/security') ?>" class="navbar-icon" title="Sécurité du compte">
+            <i class="fas fa-shield-alt"></i>
         </a>
 
         <div class="navbar-user">

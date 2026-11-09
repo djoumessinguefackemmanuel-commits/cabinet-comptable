@@ -45,7 +45,46 @@ class Controller
 
         $content = ob_get_clean();
 
+        // Export CSV / Excel / PDF du tableau affiché (?export=csv|xlsx|pdf).
+        if (
+            ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET'
+            && Auth::check()
+            && \App\Services\TableExporter::supports($_GET['export'] ?? null)
+        ) {
+            $this->exportContent($content, (string) $_GET['export'], (string) ($data['title'] ?? 'export'));
+        }
+
         require $layoutFile;
+    }
+
+    /**
+     * Exporter le contenu de la page puis terminer la requête.
+     */
+    private function exportContent(string $content, string $format, string $title): void
+    {
+        $user = Auth::user() ?? [];
+        $name = trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''));
+
+        try {
+            \App\Models\AuditLog::create([
+                'user_id' => Auth::id(),
+                'action' => 'export',
+                'entity' => 'export_' . $format,
+                'description' => mb_substr(
+                    'Export ' . strtoupper($format) . ' : ' . (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH),
+                    0,
+                    500
+                ),
+                'ip_address' => $_SERVER['HTTP_X_REAL_IP'] ?? ($_SERVER['REMOTE_ADDR'] ?? null),
+                'user_agent' => isset($_SERVER['HTTP_USER_AGENT']) ? mb_substr($_SERVER['HTTP_USER_AGENT'], 0, 500) : null,
+            ]);
+        } catch (\Throwable $exception) {
+            error_log('Journal d\'audit (export) : ' . $exception->getMessage());
+        }
+
+        \App\Services\TableExporter::send($content, $format, $title, [
+            'subtitle' => trim(APP_NAME . ($name !== '' ? ' | ' . $name : '')),
+        ]);
     }
 
     /**

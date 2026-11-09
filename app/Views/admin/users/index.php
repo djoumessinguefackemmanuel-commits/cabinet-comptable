@@ -42,6 +42,12 @@
                                             </select>
                                             <button class="btn btn-sm btn-outline-secondary" type="submit">Appliquer</button>
                                         </form>
+                                        <form method="POST" action="<?= url('users/' . (int) $user['id'] . '/two-factor/reset') ?>" data-confirm-delete data-confirm-message="Réinitialiser la double authentification de cet utilisateur ? Il pourra se connecter avec son seul mot de passe et devra la réactiver.">
+                                            <?= csrfField() ?>
+                                            <button class="btn btn-sm btn-outline-secondary" type="submit" title="Téléphone perdu : supprimer la double authentification">
+                                                <i class="fas fa-mobile-alt me-1"></i> Réinit. 2FA
+                                            </button>
+                                        </form>
                                         <form method="POST" action="<?= url('users/' . (int) $user['id'] . '/delete') ?>" data-confirm-delete data-confirm-message="Supprimer définitivement cet utilisateur ? Cette action peut être impossible s’il possède des documents ou des données historiques.">
                                             <?= csrfField() ?>
                                             <button class="btn btn-sm btn-outline-danger" type="submit">

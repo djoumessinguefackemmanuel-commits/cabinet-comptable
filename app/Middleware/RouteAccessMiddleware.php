@@ -15,6 +15,8 @@ class RouteAccessMiddleware
         'GET /',
         'GET /login',
         'POST /login',
+        'GET /login/2fa',
+        'POST /login/2fa',
         'GET /forgot-password',
         'POST /forgot-password',
         'GET /reset-password',
