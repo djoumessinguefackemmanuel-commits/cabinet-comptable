@@ -42,7 +42,8 @@ define('APP_PATH', ROOT_PATH . '/app');
 define('CONFIG_PATH', ROOT_PATH . '/config');
 define('VIEW_PATH', APP_PATH . '/Views');
 define('PUBLIC_PATH', ROOT_PATH . '/public');
-define('STORAGE_PATH', ROOT_PATH . '/storage');
+// Sur Vercel le disque du projet est en lecture seule : seul /tmp est inscriptible.
+define('STORAGE_PATH', getenv('VERCEL') !== false ? sys_get_temp_dir() . '/cabinet-storage' : ROOT_PATH . '/storage');
 
 // URL de base
 $detectedBaseUrl = null;

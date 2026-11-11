@@ -1,13 +1,18 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "services": {
-    "app": {
-      "root": ".",
-      "entrypoint": "Dockerfile",
-      "runtime": "container"
-    }
+  "functions": {
+    "api/index.php": { "runtime": "vercel-php@0.8.0", "maxDuration": 30, "memory": 1024 }
   },
-  "rewrites": [
-    { "source": "/(.*)", "destination": { "service": "app" } }
+  "routes": [
+    { "src": "/sw.js", "headers": { "Cache-Control": "no-cache", "Service-Worker-Allowed": "/" }, "continue": true },
+    { "src": "/manifest.webmanifest", "headers": { "Content-Type": "application/manifest+json" }, "continue": true },
+    { "src": "/(.*)", "headers": {
+        "X-Frame-Options": "DENY",
+        "X-Content-Type-Options": "nosniff",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=()"
+      }, "continue": true },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/api/index.php" }
   ]
 }

@@ -1,0 +1,9 @@
+# Hébergement Docker (Railway / Caddy) : inutile sur Vercel
+Dockerfile
+Caddyfile
+# Le point d'entrée Vercel est api/index.php (ne pas publier le fichier PHP en statique)
+public/index.php
+tests
+docs
+scripts
+.git
