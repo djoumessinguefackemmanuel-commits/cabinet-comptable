@@ -69,7 +69,10 @@ if (
         || app_env('MAIL_PASSWORD') === ''
     )
 ) {
-    throw new RuntimeException('La configuration SMTP de production est incomplète.');
+    // Le courrier ne doit pas empêcher l'application de démarrer : on bascule en mode dégradé
+    // (mail() PHP) et on signale le problème dans les journaux.
+    error_log('SMTP incomplet (MAIL_HOST, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD) : envoi d\'e-mails dégradé.');
+    $mailDriver = 'php';
 }
 
 define('DB_DRIVER', $dbDriver);
