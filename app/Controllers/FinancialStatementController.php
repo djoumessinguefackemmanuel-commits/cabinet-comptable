@@ -5,94 +5,88 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Models\Exercise;
 use App\Services\FinancialStatementService;
+use App\Services\ReportQuery;
 
 class FinancialStatementController extends Controller
 {
     /**
-     * Afficher le bilan comptable.
+     * Afficher le bilan comptable à une date (filtre : date).
      */
     public function balanceSheet(): void
     {
-        $exerciseId = (int) ($_GET['exercise_id'] ?? 0);
-
-        $exercises = $this->accessibleExercises();
-        $statement = [];
-
-        if ($this->canAccessExercise($exerciseId, $exercises)) {
-            $service = new FinancialStatementService();
-            $statement = $service->getBalanceSheet($exerciseId);
-        }
+        $date = ReportQuery::date($_GET['date'] ?? null) ?? date('Y-m-d');
 
         $this->view('reports.balance-sheet', [
-            'statement' => $statement,
-            'exercises' => $exercises,
-            'selectedExercise' => $exerciseId
+            'title' => 'Bilan comptable',
+            'report' => (new ReportQuery())->balanceSheet($date)
         ]);
     }
 
     /**
-     * Afficher le compte de résultat.
+     * Afficher le compte de résultat (filtre : période).
      */
     public function incomeStatement(): void
     {
-        $exerciseId = (int) ($_GET['exercise_id'] ?? 0);
-
-        $exercises = $this->accessibleExercises();
-        $statement = [];
-
-        if ($this->canAccessExercise($exerciseId, $exercises)) {
-            $service = new FinancialStatementService();
-            $statement = $service->getIncomeStatement($exerciseId);
-        }
-
         $this->view('reports.income-statement', [
-            'statement' => $statement,
-            'exercises' => $exercises,
-            'selectedExercise' => $exerciseId
+            'title' => 'Compte de résultat',
+            'report' => (new ReportQuery())->incomeStatement(
+                ReportQuery::date($_GET['start_date'] ?? null),
+                ReportQuery::date($_GET['end_date'] ?? null)
+            )
         ]);
     }
 
     /**
-     * Afficher la balance générale.
+     * Afficher la balance générale (filtre : période).
      */
     public function trialBalance(): void
     {
-        $exerciseId = (int) ($_GET['exercise_id'] ?? 0);
+        $start = ReportQuery::date($_GET['start_date'] ?? null);
+        $end = ReportQuery::date($_GET['end_date'] ?? null);
 
-        $exercises = $this->accessibleExercises();
-        $statement = [];
-
-        if ($this->canAccessExercise($exerciseId, $exercises)) {
-            $service = new FinancialStatementService();
-            $statement = $service->getTrialBalance($exerciseId);
-        }
+        $report = (new ReportQuery())->trialBalance($start, $end);
+        $report['start_date'] = $start ?? '';
+        $report['end_date'] = $end ?? '';
 
         $this->view('reports.trial-balance', [
-            'statement' => $statement,
-            'exercises' => $exercises,
-            'selectedExercise' => $exerciseId
+            'title' => 'Balance générale',
+            'report' => $report,
+            'accounts' => $report['accounts']
         ]);
     }
 
     /**
-     * Afficher le grand livre général.
+     * Afficher le grand livre général d'un compte (filtres : compte, période).
      */
     public function generalLedger(): void
     {
-        $exerciseId = (int) ($_GET['exercise_id'] ?? 0);
+        $query = new ReportQuery();
 
-        $exercises = $this->accessibleExercises();
-        $statement = [];
+        $accountId = (int) ($_GET['account_id'] ?? 0);
+        $start = ReportQuery::date($_GET['start_date'] ?? null);
+        $end = ReportQuery::date($_GET['end_date'] ?? null);
 
-        if ($this->canAccessExercise($exerciseId, $exercises)) {
-            $service = new FinancialStatementService();
-            $statement = $service->getGeneralLedger($exerciseId);
+        $selectedAccount = $accountId > 0 ? $query->account($accountId) : null;
+        $report = [
+            'entries' => [],
+            'total_debit' => 0,
+            'total_credit' => 0,
+            'final_balance' => 0
+        ];
+
+        if ($selectedAccount !== null) {
+            $report = $query->accountLedger($accountId, $start, $end);
         }
 
+        $report['start_date'] = $start ?? '';
+        $report['end_date'] = $end ?? '';
+
         $this->view('reports.general-ledger', [
-            'statement' => $statement,
-            'exercises' => $exercises,
-            'selectedExercise' => $exerciseId
+            'title' => 'Grand livre général',
+            'report' => $report,
+            'entries' => $report['entries'],
+            'accounts' => $query->accounts(),
+            'selectedAccount' => $selectedAccount
         ]);
     }
 

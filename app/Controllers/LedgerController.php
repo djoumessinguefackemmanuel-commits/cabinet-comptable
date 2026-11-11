@@ -3,51 +3,33 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
-use App\Models\Ledger;
-use App\Models\Account;
-use App\Models\Exercise;
+use App\Services\ReportQuery;
 
 class LedgerController extends Controller
 {
     /**
-     * Afficher le grand livre comptable.
+     * Afficher le grand livre comptable (filtres : compte, période).
      */
     public function index(): void
     {
-        $exerciseId = (int) ($_GET['exercise_id'] ?? 0);
+        $query = new ReportQuery();
+
         $accountId = (int) ($_GET['account_id'] ?? 0);
+        $start = ReportQuery::date($_GET['start_date'] ?? null);
+        $end = ReportQuery::date($_GET['end_date'] ?? null);
 
-        $companyIds = \App\Core\Auth::companyIds();
-        $exercises = $companyIds === null
-            ? Exercise::getAll()
-            : Exercise::getByCompanies($companyIds);
-        $accounts = $companyIds === null
-            ? Account::getAll()
-            : Account::getByCompanies($companyIds);
+        $selectedAccount = $accountId > 0 ? $query->account($accountId) : null;
 
-        $ledger = [];
-
-        $canAccessExercise = false;
-        foreach ($exercises as $exercise) {
-            if ((int) $exercise['id'] === $exerciseId) {
-                $canAccessExercise = true;
-                break;
-            }
-        }
-
-        if ($canAccessExercise) {
-            $ledger = Ledger::getByExercise(
-                $exerciseId,
-                $accountId > 0 ? $accountId : null
-            );
-        }
+        // Un compte demandé mais inaccessible ne doit révéler aucune donnée.
+        $entries = ($accountId > 0 && $selectedAccount === null)
+            ? []
+            : $query->ledgerEntries($selectedAccount ? $accountId : null, $start, $end);
 
         $this->view('accounting.ledger.index', [
-            'ledger' => $ledger,
-            'exercises' => $exercises,
-            'accounts' => $accounts,
-            'selectedExercise' => $exerciseId,
-            'selectedAccount' => $accountId
+            'title' => 'Grand livre comptable',
+            'entries' => $entries,
+            'accounts' => $query->accounts(),
+            'selectedAccount' => $selectedAccount
         ]);
     }
 }

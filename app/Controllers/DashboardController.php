@@ -150,7 +150,7 @@ class DashboardController extends Controller
             $placeholders = implode(',', array_fill(0, count($companyIds), '?'));
             $stats = $pdo->prepare("
                 SELECT COUNT(*) AS total,
-                       SUM(status = 'pending') AS pending
+                       SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending
                 FROM invoices
                 WHERE company_id IN ({$placeholders})
             ");

@@ -29,7 +29,7 @@ class LedgerService
                 el.description,
                 el.debit,
                 el.credit,
-                e.date AS entry_date,
+                e.entry_date AS entry_date,
                 e.reference AS entry_reference,
                 j.code AS journal_code,
                 j.name AS journal_name
@@ -39,7 +39,7 @@ class LedgerService
             WHERE el.account_id = :account_id
               AND e.exercise_id = :exercise_id
               AND e.status = :status
-            ORDER BY e.date ASC, el.id ASC
+            ORDER BY e.entry_date ASC, el.id ASC
         ";
 
         $statement = $this->db->prepare($sql);
