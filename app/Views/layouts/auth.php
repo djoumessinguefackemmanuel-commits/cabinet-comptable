@@ -12,6 +12,10 @@
     <meta name="description" content="Authentification sécurisée du cabinet comptable.">
 
     <link rel="icon" href="<?= asset('images/favicon.ico') ?>">
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+    <meta name="theme-color" content="#173b63">
 
     <link rel="stylesheet" href="<?= asset('css/bootstrap.min.css') ?>">
     <link rel="stylesheet" href="<?= asset('css/all.min.css') ?>">
@@ -86,5 +90,6 @@
     <script src="<?= asset('js/bootstrap.bundle.min.js') ?>"></script>
     <script src="<?= asset('js/app.js') ?>"></script>
 
+    <script src="/assets/js/install.js" defer></script>
 </body>
 </html>

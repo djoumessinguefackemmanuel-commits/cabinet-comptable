@@ -11,6 +11,14 @@
         -Server
     }
 
+    @sw path /sw.js
+    header @sw {
+        Cache-Control "no-cache"
+        Service-Worker-Allowed "/"
+    }
+    @manifest path /manifest.webmanifest
+    header @manifest Content-Type "application/manifest+json"
+
     php_server {
         try_files {path} index.php
     }
