@@ -47,7 +47,7 @@ $currentUser = Auth::user();
             <i class="fas fa-shield-alt"></i>
         </a>
 
-        <div class="navbar-user">
+        <a class="navbar-user" href="<?= url('account/profile') ?>" title="Mon profil" style="text-decoration:none;color:inherit">
 
             <div class="navbar-user-avatar">
                 <i class="fas fa-user"></i>
@@ -66,7 +66,7 @@ $currentUser = Auth::user();
                 </small>
             </div>
 
-        </div>
+        </a>
 
         <form action="<?= url('logout') ?>" method="POST">
             <?= csrfField() ?>

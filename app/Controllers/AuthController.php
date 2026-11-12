@@ -6,6 +6,7 @@ use App\Core\Controller;
 use App\Core\Auth;
 use App\Core\Session;
 use App\Services\AuditService;
+use App\Models\User;
 use App\Services\LoginThrottle;
 use App\Services\TwoFactorService;
 use App\Services\PasswordResetService;
@@ -109,6 +110,7 @@ class AuthController extends Controller
         }
 
         LoginThrottle::clear($data['email']);
+        User::touchLastLogin((int) $loggedUser['id']);
 
         $this->redirectByRole();
     }
@@ -184,6 +186,7 @@ class AuthController extends Controller
         Session::remove('two_factor_pending');
         LoginThrottle::clear($email);
         AuditService::log('login_2fa', 'users', $userId, 'Connexion avec double authentification.');
+        User::touchLastLogin($userId);
 
         $this->redirectByRole();
     }

@@ -147,6 +147,46 @@ class User extends Model
     }
 
     /**
+     * Mise à jour par l'utilisateur lui-même (nom, prénom, téléphone uniquement).
+     */
+    public static function updateProfile(int $id, string $firstName, string $lastName, ?string $phone): bool
+    {
+        return self::execute(
+            "UPDATE users SET first_name = ?, last_name = ?, phone = ?, updated_at = NOW() WHERE id = ?",
+            [$firstName, $lastName, $phone, $id]
+        );
+    }
+
+    /**
+     * Enregistrer la date de dernière connexion.
+     */
+    public static function touchLastLogin(int $id): void
+    {
+        try {
+            self::execute("UPDATE users SET last_login_at = NOW() WHERE id = ?", [$id]);
+        } catch (\Throwable $exception) {
+            error_log('User::touchLastLogin : ' . $exception->getMessage());
+        }
+    }
+
+    /**
+     * Entreprises rattachées à l'utilisateur (noms).
+     */
+    public static function companyNames(int $id): array
+    {
+        try {
+            return self::query(
+                "SELECT c.name FROM companies c
+                 INNER JOIN user_companies uc ON uc.company_id = c.id
+                 WHERE uc.user_id = ? ORDER BY c.name",
+                [$id]
+            )->fetchAll(PDO::FETCH_COLUMN);
+        } catch (\Throwable $exception) {
+            return [];
+        }
+    }
+
+    /**
      * Modifier le mot de passe d'un utilisateur.
      */
     public static function updatePassword(int $id, string $password): bool

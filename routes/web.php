@@ -2,6 +2,7 @@
 
 use App\Controllers\AuthController;
 use App\Controllers\AccountSecurityController;
+use App\Controllers\ProfileController;
 use App\Controllers\DashboardController;
 use App\Controllers\UserController;
 use App\Controllers\RoleController;
@@ -52,6 +53,9 @@ $router->post('/logout', [AuthController::class, 'logout']);
 |--------------------------------------------------------------------------
 */
 
+$router->get('/account/profile', [ProfileController::class, 'show']);
+$router->post('/account/profile', [ProfileController::class, 'update']);
+$router->post('/account/profile/password', [ProfileController::class, 'changePassword']);
 $router->get('/account/security', [AccountSecurityController::class, 'show']);
 $router->post('/account/security/enable', [AccountSecurityController::class, 'enable']);
 $router->post('/account/security/disable', [AccountSecurityController::class, 'disable']);
