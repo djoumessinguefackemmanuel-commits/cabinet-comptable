@@ -7,6 +7,7 @@ use App\Core\Controller;
 use App\Core\Session;
 use App\Models\User;
 use App\Services\AuditService;
+use App\Services\AvatarService;
 use App\Services\LoginThrottle;
 use App\Services\TwoFactorService;
 
@@ -34,11 +35,15 @@ class ProfileController extends Controller
             // Affichage informatif seulement.
         }
 
+        $_SESSION['user']['avatar_v'] = AvatarService::version((int) $user['id']);
+
         $this->render('account.profile', [
             'title' => 'Mon profil',
             'profile' => $user,
             'companies' => User::companyNames((int) $user['id']),
             'twoFactor' => $twoFactor,
+            'activity' => User::recentActivity((int) $user['id']),
+            'avatarVersion' => $_SESSION['user']['avatar_v'],
             'old' => Session::getFlash('profile_old', []),
             'errors' => Session::getFlash('profile_errors', []),
             'passwordErrors' => Session::getFlash('password_errors', []),
@@ -85,6 +90,69 @@ class ProfileController extends Controller
         AuditService::log('profile_updated', 'users', (int) $user['id'], 'Profil mis à jour par l\'utilisateur.');
         Session::set('success', 'Votre profil a été mis à jour.');
         $this->redirect(url('account/profile'));
+    }
+
+    public function uploadAvatar(): void
+    {
+        $user = $this->currentUser();
+        if ($user === null) {
+            $this->redirect(url('login'));
+            return;
+        }
+
+        try {
+            AvatarService::store((int) $user['id'], $_FILES['avatar'] ?? []);
+            $_SESSION['user']['avatar_v'] = AvatarService::version((int) $user['id']);
+            AuditService::log('avatar_updated', 'users', (int) $user['id'], 'Photo de profil modifiée.');
+            Session::set('success', 'Votre photo de profil a été mise à jour.');
+        } catch (\RuntimeException $exception) {
+            Session::set('error', $exception->getMessage());
+        } catch (\Throwable $exception) {
+            error_log('ProfileController::uploadAvatar : ' . $exception->getMessage());
+            Session::set('error', 'Impossible d\'enregistrer la photo pour le moment.');
+        }
+
+        $this->redirect(url('account/profile'));
+    }
+
+    public function deleteAvatar(): void
+    {
+        $user = $this->currentUser();
+        if ($user === null) {
+            $this->redirect(url('login'));
+            return;
+        }
+
+        AvatarService::delete((int) $user['id']);
+        $_SESSION['user']['avatar_v'] = null;
+        AuditService::log('avatar_deleted', 'users', (int) $user['id'], 'Photo de profil supprimée.');
+        Session::set('success', 'Votre photo de profil a été supprimée.');
+        $this->redirect(url('account/profile'));
+    }
+
+    /**
+     * Afficher une photo : la sienne, ou celle de n'importe quel utilisateur pour un administrateur.
+     */
+    public function avatar(string $id): void
+    {
+        $targetId = (int) $id;
+        if ($targetId !== (int) Auth::id() && !Auth::hasRole(ROLE_ADMIN)) {
+            http_response_code(403);
+            exit;
+        }
+
+        $avatar = AvatarService::read($targetId);
+        if ($avatar === null) {
+            http_response_code(404);
+            exit;
+        }
+
+        header('Content-Type: image/jpeg');
+        header('X-Content-Type-Options: nosniff');
+        header('Cache-Control: private, max-age=86400');
+        header('Content-Length: ' . strlen($avatar['content']));
+        echo $avatar['content'];
+        exit;
     }
 
     public function changePassword(): void

@@ -23,9 +23,41 @@ $val = static fn (string $key) => $old[$key] ?? ($profile[$key] ?? '');
     <div class="col-lg-4">
         <section class="card">
             <div class="card-body text-center">
-                <div class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle"
-                     style="width:96px;height:96px;background:var(--primary,#173b63);color:#fff;font-size:2rem;font-weight:700"
-                     aria-hidden="true"><?= e($initials !== '' ? $initials : '?') ?></div>
+                <div id="avatarZone" class="border border-2 border-dashed rounded-3 p-3 mb-3" style="border-style:dashed!important">
+                    <div id="avatarPreview" class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle overflow-hidden"
+                         style="width:112px;height:112px;background:var(--primary,#173b63);color:#fff;font-size:2.2rem;font-weight:700">
+                        <?php if (!empty($avatarVersion)): ?>
+                            <img src="<?= url('account/avatar/' . (int) $profile['id']) ?>?v=<?= (int) $avatarVersion ?>"
+                                 alt="Photo de profil" style="width:100%;height:100%;object-fit:cover;display:block">
+                        <?php else: ?>
+                            <span aria-hidden="true"><?= e($initials !== '' ? $initials : '?') ?></span>
+                        <?php endif; ?>
+                    </div>
+
+                    <form id="avatarForm" method="POST" action="<?= url('account/profile/avatar') ?>" enctype="multipart/form-data">
+                        <?= csrfField() ?>
+                        <input type="file" id="avatarInput" name="avatar" accept="image/jpeg,image/png,image/webp" class="d-none">
+                        <label for="avatarInput" class="btn btn-outline-primary btn-sm mb-1">
+                            <i class="fas fa-camera me-1"></i> Choisir une photo
+                        </label>
+                        <button type="submit" id="avatarSave" class="btn btn-primary btn-sm mb-1" disabled>
+                            <i class="fas fa-upload me-1"></i> Enregistrer la photo
+                        </button>
+                        <div class="form-text">JPEG, PNG ou WebP. Vous pouvez aussi glisser l'image ici.</div>
+                        <div id="avatarMessage" class="small mt-2 text-muted" role="status"></div>
+                    </form>
+
+                    <?php if (!empty($avatarVersion)): ?>
+                        <form method="POST" action="<?= url('account/profile/avatar/delete') ?>" class="mt-2"
+                              onsubmit="return confirm('Supprimer votre photo de profil ?');">
+                            <?= csrfField() ?>
+                            <button type="submit" class="btn btn-link btn-sm text-danger p-0">
+                                <i class="fas fa-trash-alt me-1"></i> Supprimer la photo
+                            </button>
+                        </form>
+                    <?php endif; ?>
+                </div>
+
                 <h2 class="h5 mb-1"><?= e($fullName) ?></h2>
                 <span class="badge bg-primary mb-3"><?= e($roleLabel) ?></span>
 
@@ -133,5 +165,25 @@ $val = static fn (string $key) => $old[$key] ?? ($profile[$key] ?? '');
                 </form>
             </div>
         </section>
+
+        <section class="card mt-4">
+            <div class="card-header"><h2 class="card-title">Activité récente</h2></div>
+            <div class="card-body">
+                <?php if (empty($activity)): ?>
+                    <p class="text-muted mb-0">Aucune activité enregistrée pour le moment.</p>
+                <?php else: ?>
+                    <ul class="list-unstyled mb-0">
+                        <?php foreach ($activity as $row): ?>
+                            <li class="d-flex justify-content-between gap-3 py-2 border-bottom">
+                                <span><?= e($row['description'] ?: $row['action']) ?></span>
+                                <small class="text-muted text-nowrap"><?= e($dateFr($row['created_at'] ?? null)) ?></small>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+            </div>
+        </section>
     </div>
 </div>
+
+<script src="<?= asset('js/profile.js') ?>"></script>

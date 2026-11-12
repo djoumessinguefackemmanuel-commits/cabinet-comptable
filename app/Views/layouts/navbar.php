@@ -49,8 +49,13 @@ $currentUser = Auth::user();
 
         <a class="navbar-user" href="<?= url('account/profile') ?>" title="Mon profil" style="text-decoration:none;color:inherit">
 
-            <div class="navbar-user-avatar">
-                <i class="fas fa-user"></i>
+            <div class="navbar-user-avatar" style="overflow:hidden">
+                <?php if (!empty($currentUser['avatar_v'])): ?>
+                    <img src="<?= url('account/avatar/' . (int) ($currentUser['id'] ?? 0)) ?>?v=<?= (int) $currentUser['avatar_v'] ?>"
+                         alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+                <?php else: ?>
+                    <i class="fas fa-user"></i>
+                <?php endif; ?>
             </div>
 
             <div class="navbar-user-info">

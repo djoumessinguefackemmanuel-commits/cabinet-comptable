@@ -4,7 +4,7 @@ return [
     ['methods' => ['GET'], 'pattern' => '#^/(?:dashboard|admin/dashboard|expert/dashboard|accountant/dashboard|client/dashboard)$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT, ROLE_ACCOUNTANT, ROLE_CLIENT]],
     ['methods' => ['GET'], 'pattern' => '#^/users(?:/.*)?$#', 'roles' => [ROLE_ADMIN]],
     ['methods' => ['POST'], 'pattern' => '#^/users(?:/.*)?$#', 'roles' => [ROLE_ADMIN]],
-    ['methods' => ['GET', 'POST'], 'pattern' => '#^/account/(?:security|profile)(?:/.*)?$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT, ROLE_ACCOUNTANT, ROLE_CLIENT]],
+    ['methods' => ['GET', 'POST'], 'pattern' => '#^/account/(?:security|profile|avatar)(?:/.*)?$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT, ROLE_ACCOUNTANT, ROLE_CLIENT]],
     ['methods' => ['POST'], 'pattern' => '#^/logout$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT, ROLE_ACCOUNTANT, ROLE_CLIENT]],
     ['methods' => ['GET', 'POST'], 'pattern' => '#^/roles(?:/.*)?$#', 'roles' => [ROLE_ADMIN]],
     ['methods' => ['GET', 'POST'], 'pattern' => '#^/companies(?:/.*)?$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT]],

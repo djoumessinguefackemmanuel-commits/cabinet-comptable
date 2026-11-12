@@ -7,6 +7,7 @@ use App\Core\Auth;
 use App\Core\Session;
 use App\Services\AuditService;
 use App\Models\User;
+use App\Services\AvatarService;
 use App\Services\LoginThrottle;
 use App\Services\TwoFactorService;
 use App\Services\PasswordResetService;
@@ -111,6 +112,7 @@ class AuthController extends Controller
 
         LoginThrottle::clear($data['email']);
         User::touchLastLogin((int) $loggedUser['id']);
+        $_SESSION['user']['avatar_v'] = AvatarService::version((int) $loggedUser['id']);
 
         $this->redirectByRole();
     }
@@ -187,6 +189,7 @@ class AuthController extends Controller
         LoginThrottle::clear($email);
         AuditService::log('login_2fa', 'users', $userId, 'Connexion avec double authentification.');
         User::touchLastLogin($userId);
+        $_SESSION['user']['avatar_v'] = AvatarService::version($userId);
 
         $this->redirectByRole();
     }

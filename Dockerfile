@@ -1,7 +1,7 @@
 FROM dunglas/frankenphp:1-php8.4-bookworm
 
 RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
-    && install-php-extensions pdo_pgsql pgsql pdo_mysql intl zip \
+    && install-php-extensions pdo_pgsql pgsql pdo_mysql intl zip gd exif \
     && printf 'upload_max_filesize=5M\npost_max_size=8M\nmemory_limit=256M\n' > "$PHP_INI_DIR/conf.d/zz-app.ini"
 
 WORKDIR /app

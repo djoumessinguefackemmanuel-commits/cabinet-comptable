@@ -56,13 +56,22 @@ if (!empty($_SERVER['HTTP_HOST'])) {
 }
 
 // APP_URL (sans slash final) prioritaire ; sinon l'adresse de la requete.
+// Sur Vercel, seules les adresses du projet (alias *.vercel.app, domaine personnalisé) arrivent
+// jusqu'ici : on utilise donc l'adresse réellement visitée, sinon le formulaire de connexion
+// enverrait le visiteur vers un autre domaine, sans son cookie de session (connexion refusée).
 $configuredBaseUrl = app_env('APP_URL');
+$host = strtolower((string) ($_SERVER['HTTP_HOST'] ?? ''));
+$trustRequestHost = getenv('VERCEL') !== false
+    && $detectedBaseUrl !== null
+    && preg_match('/^[a-z0-9]([a-z0-9.-]*[a-z0-9])?(:\d{1,5})?$/', $host) === 1;
 define(
     'BASE_URL',
     rtrim(
-        ($configuredBaseUrl !== null && $configuredBaseUrl !== '')
-            ? $configuredBaseUrl
-            : ($detectedBaseUrl ?? 'http://localhost/cabinet-comptable/public'),
+        $trustRequestHost
+            ? $detectedBaseUrl
+            : (($configuredBaseUrl !== null && $configuredBaseUrl !== '')
+                ? $configuredBaseUrl
+                : ($detectedBaseUrl ?? 'http://localhost/cabinet-comptable/public')),
         '/'
     )
 );

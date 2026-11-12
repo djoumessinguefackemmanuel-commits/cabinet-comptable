@@ -170,6 +170,22 @@ class User extends Model
     }
 
     /**
+     * Dernières actions de l'utilisateur (journal d'audit).
+     */
+    public static function recentActivity(int $id, int $limit = 8): array
+    {
+        try {
+            return self::query(
+                "SELECT action, description, ip_address, created_at
+                 FROM audit_logs WHERE user_id = ? ORDER BY created_at DESC, id DESC LIMIT " . (int) $limit,
+                [$id]
+            )->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\Throwable $exception) {
+            return [];
+        }
+    }
+
+    /**
      * Entreprises rattachées à l'utilisateur (noms).
      */
     public static function companyNames(int $id): array
@@ -215,6 +231,7 @@ class User extends Model
      */
     public static function delete(int $id): bool
     {
+        \App\Services\AvatarService::delete($id);
         return self::execute(
             "DELETE FROM users WHERE id = ?",
             [$id]
