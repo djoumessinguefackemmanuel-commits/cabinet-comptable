@@ -59,6 +59,8 @@ $router->post('/account/profile/password', [ProfileController::class, 'changePas
 $router->post('/account/profile/avatar', [ProfileController::class, 'uploadAvatar']);
 $router->post('/account/profile/avatar/delete', [ProfileController::class, 'deleteAvatar']);
 $router->get('/account/avatar/{id}', [ProfileController::class, 'avatar']);
+$router->post('/account/profile/activity/clear', [ProfileController::class, 'clearActivity']);
+$router->post('/account/profile/activity/{id}/delete', [ProfileController::class, 'deleteActivity']);
 $router->get('/account/security', [AccountSecurityController::class, 'show']);
 $router->post('/account/security/enable', [AccountSecurityController::class, 'enable']);
 $router->post('/account/security/disable', [AccountSecurityController::class, 'disable']);

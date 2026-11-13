@@ -75,9 +75,16 @@
 
             <div class="row g-4 align-items-start">
                 <div class="col-md-5 text-center">
-                    <div id="two-factor-qr" class="d-inline-block p-2 bg-white border rounded" style="min-width:180px;min-height:180px" aria-label="QR code de configuration"></div>
-                    <p class="small text-muted mt-2 mb-1">Saisie manuelle :</p>
-                    <code class="user-select-all" style="word-break:break-all"><?= e(trim(chunk_split((string) $setupSecret, 4, ' '))) ?></code>
+                    <div id="two-factor-qr" class="d-inline-block bg-white border rounded" style="padding:12px;min-width:264px;min-height:264px" aria-label="QR code de configuration">
+                        <noscript>Activez JavaScript pour afficher le QR code, ou utilisez la clé ci-dessous.</noscript>
+                    </div>
+                    <p class="small text-muted mt-2 mb-1">Impossible de scanner ? Saisie manuelle :</p>
+                    <code id="two-factor-key" class="user-select-all d-block" style="word-break:break-all"><?= e(trim(chunk_split((string) $setupSecret, 4, ' '))) ?></code>
+                    <div class="d-flex flex-wrap gap-2 justify-content-center mt-2">
+                        <button type="button" id="two-factor-copy" class="btn btn-outline-secondary btn-sm"><i class="fas fa-copy me-1"></i> Copier la clé</button>
+                        <a class="btn btn-outline-primary btn-sm" href="<?= e((string) $setupUri) ?>"><i class="fas fa-mobile-alt me-1"></i> Ouvrir dans mon application</a>
+                    </div>
+                    <p class="small text-muted mt-2 mb-0">Sur téléphone, utilisez « Ouvrir dans mon application » ou copiez la clé.</p>
                 </div>
                 <div class="col-md-7">
                     <form method="POST" action="<?= url('account/security/enable') ?>">
@@ -99,9 +106,20 @@
             var qr = qrcode(0, 'M');
             qr.addData(<?= json_encode($setupUri, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) ?>);
             qr.make();
-            target.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+            // Marge blanche de 4 modules (norme QR) : indispensable pour que le téléphone repère le code.
+            target.innerHTML = qr.createSvgTag({ cellSize: 6, margin: 24, scalable: true });
             var svg = target.querySelector('svg');
-            if (svg) { svg.style.width = '170px'; svg.style.height = '170px'; }
+            if (svg) { svg.style.width = '240px'; svg.style.height = '240px'; svg.style.display = 'block'; svg.style.shapeRendering = 'crispEdges'; }
+            var copy = document.getElementById('two-factor-copy');
+            if (copy) {
+                copy.addEventListener('click', function () {
+                    var key = <?= json_encode((string) $setupSecret) ?>;
+                    var done = function () { copy.innerHTML = '<i class="fas fa-check me-1"></i> Clé copiée'; };
+                    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(key).then(done); return; }
+                    var range = document.createRange(); range.selectNodeContents(document.getElementById('two-factor-key'));
+                    var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range); done();
+                });
+            }
         })();
     </script>
 <?php endif; ?>

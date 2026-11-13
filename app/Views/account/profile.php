@@ -167,20 +167,39 @@ $val = static fn (string $key) => $old[$key] ?? ($profile[$key] ?? '');
         </section>
 
         <section class="card mt-4">
-            <div class="card-header"><h2 class="card-title">Activité récente</h2></div>
+            <div class="card-header d-flex justify-content-between align-items-center gap-2 flex-wrap">
+                <h2 class="card-title mb-0">Activité récente</h2>
+                <?php if (!empty($activity)): ?>
+                    <form method="POST" action="<?= url('account/profile/activity/clear') ?>"
+                          onsubmit="return confirm('Vider tout votre historique d\'activité ?');">
+                        <?= csrfField() ?>
+                        <button type="submit" class="btn btn-outline-danger btn-sm"><i class="fas fa-broom me-1"></i> Tout effacer</button>
+                    </form>
+                <?php endif; ?>
+            </div>
             <div class="card-body">
                 <?php if (empty($activity)): ?>
-                    <p class="text-muted mb-0">Aucune activité enregistrée pour le moment.</p>
+                    <p class="text-muted mb-0">Aucune activité à afficher.</p>
                 <?php else: ?>
                     <ul class="list-unstyled mb-0">
                         <?php foreach ($activity as $row): ?>
-                            <li class="d-flex justify-content-between gap-3 py-2 border-bottom">
-                                <span><?= e($row['description'] ?: $row['action']) ?></span>
+                            <li class="d-flex justify-content-between align-items-center gap-3 py-2 border-bottom">
+                                <span class="flex-grow-1"><?= e($row['description'] ?: $row['action']) ?></span>
                                 <small class="text-muted text-nowrap"><?= e($dateFr($row['created_at'] ?? null)) ?></small>
+                                <form method="POST" action="<?= url('account/profile/activity/' . (int) $row['id'] . '/delete') ?>" class="m-0">
+                                    <?= csrfField() ?>
+                                    <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Supprimer cette ligne" aria-label="Supprimer cette ligne">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </form>
                             </li>
                         <?php endforeach; ?>
                     </ul>
                 <?php endif; ?>
+                <p class="small text-muted mt-3 mb-0">
+                    Cet historique est personnel. Le journal d'audit du cabinet conserve les traces des actions
+                    importantes et reste consultable par l'administrateur.
+                </p>
             </div>
         </section>
     </div>

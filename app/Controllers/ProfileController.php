@@ -6,6 +6,7 @@ use App\Core\Auth;
 use App\Core\Controller;
 use App\Core\Session;
 use App\Models\User;
+use App\Services\ActivityService;
 use App\Services\AuditService;
 use App\Services\AvatarService;
 use App\Services\LoginThrottle;
@@ -42,7 +43,7 @@ class ProfileController extends Controller
             'profile' => $user,
             'companies' => User::companyNames((int) $user['id']),
             'twoFactor' => $twoFactor,
-            'activity' => User::recentActivity((int) $user['id']),
+            'activity' => ActivityService::visible((int) $user['id']),
             'avatarVersion' => $_SESSION['user']['avatar_v'],
             'old' => Session::getFlash('profile_old', []),
             'errors' => Session::getFlash('profile_errors', []),
@@ -153,6 +154,46 @@ class ProfileController extends Controller
         header('Content-Length: ' . strlen($avatar['content']));
         echo $avatar['content'];
         exit;
+    }
+
+    public function deleteActivity(string $id): void
+    {
+        $user = $this->currentUser();
+        if ($user === null) {
+            $this->redirect(url('login'));
+            return;
+        }
+
+        try {
+            ActivityService::hide((int) $user['id'], (int) $id);
+            Session::set('success', 'Ligne supprimée de votre historique.');
+        } catch (\Throwable $exception) {
+            error_log('ProfileController::deleteActivity : ' . $exception->getMessage());
+            Session::set('error', 'Impossible de supprimer cette ligne pour le moment.');
+        }
+
+        $this->redirect(url('account/profile'));
+    }
+
+    public function clearActivity(): void
+    {
+        $user = $this->currentUser();
+        if ($user === null) {
+            $this->redirect(url('login'));
+            return;
+        }
+
+        try {
+            ActivityService::hideAll((int) $user['id']);
+            // Trace conservée dans le journal d'audit (non affichée dans l'historique personnel).
+            AuditService::log('activity_cleared', 'users', (int) $user['id'], 'Historique personnel vidé par l\'utilisateur.');
+            Session::set('success', 'Votre historique d\'activité a été vidé.');
+        } catch (\Throwable $exception) {
+            error_log('ProfileController::clearActivity : ' . $exception->getMessage());
+            Session::set('error', 'Impossible de vider l\'historique pour le moment.');
+        }
+
+        $this->redirect(url('account/profile'));
     }
 
     public function changePassword(): void

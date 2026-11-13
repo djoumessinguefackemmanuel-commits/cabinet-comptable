@@ -66,11 +66,11 @@ class Totp
     /** Adresse otpauth:// à convertir en QR code pour l'application d'authentification. */
     public static function uri(string $secret, string $account, string $issuer): string
     {
+        // SHA1, 6 chiffres, 30 s sont les valeurs par défaut de toutes les applications :
+        // les omettre raccourcit le QR code (moins de modules, donc plus facile à scanner).
         return 'otpauth://totp/' . rawurlencode($issuer . ':' . $account)
             . '?secret=' . $secret
-            . '&issuer=' . rawurlencode($issuer)
-            . '&algorithm=SHA1&digits=' . self::DIGITS
-            . '&period=' . self::PERIOD;
+            . '&issuer=' . rawurlencode($issuer);
     }
 
     public static function base32Encode(string $data): string
