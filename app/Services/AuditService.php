@@ -50,7 +50,7 @@ class AuditService
                 ':entity' => $entity,
                 ':entity_id' => $entityId,
                 ':description' => $description,
-                ':ip_address' => $_SERVER['REMOTE_ADDR'] ?? null,
+                ':ip_address' => client_ip(),
                 ':user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? null
             ]);
 

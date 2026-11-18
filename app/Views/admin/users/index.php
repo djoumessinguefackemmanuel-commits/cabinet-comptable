@@ -42,6 +42,12 @@
                                             </select>
                                             <button class="btn btn-sm btn-outline-secondary" type="submit">Appliquer</button>
                                         </form>
+                                        <form method="POST" action="<?= url('users/' . (int) $user['id'] . '/reset-password') ?>" data-confirm-delete data-confirm-message="Générer un nouveau mot de passe temporaire pour cet utilisateur ? L'ancien ne fonctionnera plus et il devra en choisir un nouveau à sa prochaine connexion.">
+                                            <?= csrfField() ?>
+                                            <button class="btn btn-sm btn-outline-primary" type="submit" title="Mot de passe perdu ou compte bloqué : générer un nouveau mot de passe temporaire">
+                                                <i class="fas fa-key me-1"></i> Nouveau mot de passe
+                                            </button>
+                                        </form>
                                         <form method="POST" action="<?= url('users/' . (int) $user['id'] . '/two-factor/reset') ?>" data-confirm-delete data-confirm-message="Réinitialiser la double authentification de cet utilisateur ? Il pourra se connecter avec son seul mot de passe et devra la réactiver.">
                                             <?= csrfField() ?>
                                             <button class="btn btn-sm btn-outline-secondary" type="submit" title="Téléphone perdu : supprimer la double authentification">

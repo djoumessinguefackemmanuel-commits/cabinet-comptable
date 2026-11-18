@@ -75,7 +75,7 @@ class Controller
                     0,
                     500
                 ),
-                'ip_address' => $_SERVER['HTTP_X_REAL_IP'] ?? ($_SERVER['REMOTE_ADDR'] ?? null),
+                'ip_address' => client_ip(),
                 'user_agent' => isset($_SERVER['HTTP_USER_AGENT']) ? mb_substr($_SERVER['HTTP_USER_AGENT'], 0, 500) : null,
             ]);
         } catch (\Throwable $exception) {

@@ -45,6 +45,17 @@ class RouteAccessMiddleware
             exit;
         }
 
+        // Première connexion avec un mot de passe temporaire : seul le choix du mot de passe est permis.
+        if ((int) ($user['must_change_password'] ?? 0) === 1) {
+            $allowed = ['/account/welcome', '/logout'];
+            if (!in_array($path, $allowed, true)) {
+                header('Location: ' . url('account/welcome'));
+                exit;
+            }
+
+            return true;
+        }
+
         $role = $user['role'] ?? '';
         if (!$this->roleCanAccess($method, $path, $role)) {
             $this->deny($path);

@@ -46,6 +46,8 @@ $router->get('/contact-admin', [SupportController::class, 'showContactForm']);
 $router->post('/contact-admin', [SupportController::class, 'submitContactRequest']);
 
 $router->post('/logout', [AuthController::class, 'logout']);
+$router->get('/account/welcome', [AuthController::class, 'showSetPassword']);
+$router->post('/account/welcome', [AuthController::class, 'setPassword']);
 
 /*
 |--------------------------------------------------------------------------
@@ -90,6 +92,7 @@ $router->post('/users/store', [UserController::class, 'store']);
 $router->get('/users/{id}/edit', [UserController::class, 'edit']);
 $router->post('/users/{id}/update', [UserController::class, 'update']);
 $router->post('/users/{id}/status', [UserController::class, 'updateStatus']);
+$router->post('/users/{id}/reset-password', [UserController::class, 'resetPassword']);
 $router->post('/users/{id}/delete', [UserController::class, 'delete']);
 $router->post('/users/{id}/two-factor/reset', [AccountSecurityController::class, 'adminReset']);
 

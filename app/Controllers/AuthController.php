@@ -118,6 +118,86 @@ class AuthController extends Controller
     }
 
     /**
+     * Première connexion : l'utilisateur remplace le mot de passe temporaire reçu de l'administrateur.
+     */
+    public function showSetPassword(): void
+    {
+        $user = $this->mustSetPasswordUser();
+        if ($user === null) {
+            return;
+        }
+
+        $this->render('auth.set-password', [
+            'title' => 'Choisissez votre mot de passe',
+            'firstName' => $user['first_name'] ?? '',
+            'errors' => Session::getFlash('set_password_errors', []),
+        ], 'layouts.auth');
+    }
+
+    public function setPassword(): void
+    {
+        $user = $this->mustSetPasswordUser();
+        if ($user === null) {
+            return;
+        }
+
+        $new = is_string($_POST['new_password'] ?? null) ? $_POST['new_password'] : '';
+        $confirm = is_string($_POST['new_password_confirmation'] ?? null) ? $_POST['new_password_confirmation'] : '';
+        $errors = [];
+
+        if (strlen($new) < 10) {
+            $errors[] = 'Le mot de passe doit contenir au moins 10 caractères.';
+        }
+        if (strlen($new) > 72) {
+            $errors[] = 'Le mot de passe ne doit pas dépasser 72 caractères.';
+        }
+        if (preg_match('/[A-Za-z]/', $new) !== 1 || preg_match('/\d/', $new) !== 1) {
+            $errors[] = 'Le mot de passe doit contenir au moins une lettre et un chiffre.';
+        }
+        if ($new !== $confirm) {
+            $errors[] = 'La confirmation ne correspond pas au mot de passe.';
+        }
+        if ($new !== '' && password_verify($new, (string) $user['password'])) {
+            $errors[] = 'Choisissez un mot de passe différent du mot de passe temporaire.';
+        }
+
+        if ($errors !== []) {
+            Session::set('set_password_errors', $errors);
+            $this->redirect(url('account/welcome'));
+            return;
+        }
+
+        $userId = (int) $user['id'];
+        User::updatePassword($userId, $new);
+        User::setMustChangePassword($userId, false);
+        session_regenerate_id(true);
+        AuditService::log('password_changed', 'users', $userId, 'Mot de passe choisi à la première connexion.');
+
+        Session::set('success', 'Mot de passe enregistré. Bienvenue !');
+        $this->redirectByRole();
+    }
+
+    /**
+     * Utilisateur connecté qui doit encore choisir son mot de passe (sinon redirection).
+     */
+    private function mustSetPasswordUser(): ?array
+    {
+        $id = Auth::id();
+        $user = $id ? User::findById((int) $id) : null;
+
+        if ($user === null) {
+            $this->redirect(url('login'));
+            return null;
+        }
+        if ((int) ($user['must_change_password'] ?? 0) !== 1) {
+            $this->redirectByRole();
+            return null;
+        }
+
+        return $user;
+    }
+
+    /**
      * Afficher la saisie du code de double authentification.
      */
     public function showTwoFactor(): void

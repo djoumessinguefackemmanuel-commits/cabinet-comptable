@@ -319,3 +319,6 @@ CREATE TABLE IF NOT EXISTS app_sessions (
     expires_at BIGINT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_app_sessions_expires ON app_sessions (expires_at);
+
+-- Mot de passe temporaire : l'utilisateur doit choisir le sien à la première connexion
+ALTER TABLE users ADD COLUMN IF NOT EXISTS must_change_password SMALLINT NOT NULL DEFAULT 0;

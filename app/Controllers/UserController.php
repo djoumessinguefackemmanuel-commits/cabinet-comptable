@@ -9,6 +9,9 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\UserCompany;
 use App\Models\Company;
+use App\Services\AuditService;
+use App\Services\LoginThrottle;
+use App\Services\TemporaryPassword;
 use App\Validators\UserValidator;
 
 class UserController extends Controller
@@ -56,6 +59,7 @@ class UserController extends Controller
             'first_name' => trim($_POST['first_name'] ?? ''),
             'last_name' => trim($_POST['last_name'] ?? ''),
             'email' => trim($_POST['email'] ?? ''),
+            'phone' => trim($_POST['phone'] ?? '') ?: null,
             'password' => $_POST['password'] ?? '',
             'password_confirmation' => $_POST['password_confirmation'] ?? '',
             'role_id' => $_POST['role_id'] ?? '',
@@ -80,7 +84,10 @@ class UserController extends Controller
         try {
             $createdUserId = User::create($data);
         } catch (\PDOException $exception) {
-            if (($exception->errorInfo[1] ?? null) !== 1062) {
+            // Doublon d'e-mail : code MySQL 1062 ou SQLSTATE 23505 (PostgreSQL) / 23000.
+            $duplicate = ($exception->errorInfo[1] ?? null) === 1062
+                || in_array((string) $exception->getCode(), ['23505', '23000'], true);
+            if (!$duplicate) {
                 throw $exception;
             }
 
@@ -99,9 +106,50 @@ class UserController extends Controller
             return;
         }
 
-        Session::set('success', 'Utilisateur créé avec succès.');
+        $plainPassword = $data['password'];
+        $mustChange = ($_POST['force_change'] ?? '1') === '1';
+        if ($mustChange) {
+            User::setMustChangePassword((int) $createdUserId, true);
+        }
+        AuditService::log('user_created', 'users', (int) $createdUserId, 'Compte créé : ' . $data['email']);
 
-        $this->redirect(url('users'));
+        // Fiche d'invitation affichée une seule fois, directement dans cette réponse :
+        // le mot de passe en clair n'est jamais conservé (ni session, ni base).
+        $this->view('admin.users.invitation', [
+            'invited' => ['first_name' => $data['first_name'], 'last_name' => $data['last_name'], 'email' => $data['email']],
+            'plainPassword' => $plainPassword,
+            'mustChange' => $mustChange,
+            'isReset' => false,
+        ]);
+    }
+
+    /**
+     * Générer un nouveau mot de passe temporaire (utilisateur bloqué, mot de passe perdu…).
+     */
+    public function resetPassword(string $id): void
+    {
+        if (!$this->ensureAdmin()) {
+            return;
+        }
+
+        $user = User::findById((int) $id);
+        if (!$user) {
+            $this->renderError(404);
+            return;
+        }
+
+        $plainPassword = TemporaryPassword::generate();
+        User::updatePassword((int) $user['id'], $plainPassword);
+        User::setMustChangePassword((int) $user['id'], true);
+        LoginThrottle::clear((string) $user['email']);
+        AuditService::log('password_reset_admin', 'users', (int) $user['id'], 'Mot de passe temporaire généré par l\'administrateur pour ' . $user['email']);
+
+        $this->view('admin.users.invitation', [
+            'invited' => ['first_name' => $user['first_name'], 'last_name' => $user['last_name'], 'email' => $user['email']],
+            'plainPassword' => $plainPassword,
+            'mustChange' => true,
+            'isReset' => true,
+        ]);
     }
 
     /**

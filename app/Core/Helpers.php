@@ -8,6 +8,37 @@
  * ==========================================================
  */
 
+if (!function_exists('client_ip')) {
+    /**
+     * Adresse IP réelle du visiteur. Les en-têtes X-Real-IP / X-Forwarded-For ne sont crus que
+     * lorsque la connexion vient d'un proxy local ou privé (Vercel, Railway…) : un visiteur ne peut
+     * donc pas falsifier son IP pour contourner la limitation des tentatives.
+     */
+    function client_ip(): string
+    {
+        $remote = (string) ($_SERVER['REMOTE_ADDR'] ?? '');
+        $isProxy = $remote === '' || filter_var(
+            $remote,
+            FILTER_VALIDATE_IP,
+            FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
+        ) === false;
+
+        if ($isProxy) {
+            $candidates = [
+                $_SERVER['HTTP_X_REAL_IP'] ?? '',
+                trim(explode(',', (string) ($_SERVER['HTTP_X_FORWARDED_FOR'] ?? ''))[0]),
+            ];
+            foreach ($candidates as $candidate) {
+                if (is_string($candidate) && filter_var($candidate, FILTER_VALIDATE_IP) !== false) {
+                    return $candidate;
+                }
+            }
+        }
+
+        return $remote !== '' ? $remote : 'inconnue';
+    }
+}
+
 if (!function_exists('e')) {
 
     /**

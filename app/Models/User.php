@@ -87,6 +87,41 @@ class User extends Model
     /**
      * Créer un utilisateur.
      */
+    private static bool $setupColumnReady = false;
+
+    /**
+     * Colonne « doit changer son mot de passe » (créée automatiquement si absente).
+     */
+    public static function ensureSetupColumn(): void
+    {
+        if (self::$setupColumnReady) {
+            return;
+        }
+
+        if (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') {
+            self::execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS must_change_password SMALLINT NOT NULL DEFAULT 0");
+        } else {
+            $exists = self::query(
+                "SELECT COUNT(*) FROM information_schema.columns
+                 WHERE table_schema = DATABASE() AND table_name = 'users' AND column_name = 'must_change_password'"
+            )->fetchColumn();
+            if ((int) $exists === 0) {
+                self::execute("ALTER TABLE users ADD COLUMN must_change_password TINYINT NOT NULL DEFAULT 0");
+            }
+        }
+
+        self::$setupColumnReady = true;
+    }
+
+    /**
+     * Imposer (ou lever) le changement de mot de passe à la prochaine connexion.
+     */
+    public static function setMustChangePassword(int $id, bool $must): void
+    {
+        self::ensureSetupColumn();
+        self::execute("UPDATE users SET must_change_password = ? WHERE id = ?", [$must ? 1 : 0, $id]);
+    }
+
     public static function create(array $data): int|false
     {
         $sql = "

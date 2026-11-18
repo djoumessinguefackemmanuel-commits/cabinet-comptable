@@ -119,12 +119,7 @@ class LoginThrottle
      */
     private static function clientIp(): string
     {
-        $real = $_SERVER['HTTP_X_REAL_IP'] ?? '';
-        if (is_string($real) && filter_var($real, FILTER_VALIDATE_IP) !== false) {
-            return $real;
-        }
-
-        return (string) ($_SERVER['REMOTE_ADDR'] ?? 'inconnue');
+        return client_ip();
     }
 
     private static function pdo(): PDO
