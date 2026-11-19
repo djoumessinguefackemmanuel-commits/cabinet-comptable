@@ -260,4 +260,70 @@ class Account extends Model
 
         return (int) $result->fetchColumn();
     }
+
+    /**
+     * Type de compte déduit du numéro SYSCOHADA.
+     */
+    public static function typeFromNumber(string $number): string
+    {
+        $n2 = (int) substr($number, 0, 2);
+        $c = (int) substr($number, 0, 1);
+
+        return match (true) {
+            $c === 1 && $n2 <= 15 => ACCOUNT_EQUITY,
+            $c === 1 => ACCOUNT_LIABILITY,
+            $c === 2 || $c === 3 => ACCOUNT_ASSET,
+            $c === 4 => self::isReceivable($number) ? ACCOUNT_ASSET : ACCOUNT_LIABILITY,
+            $c === 5 => $n2 === 56 ? ACCOUNT_LIABILITY : ACCOUNT_ASSET,
+            $c === 6 => ACCOUNT_EXPENSE,
+            $c === 7 => ACCOUNT_REVENUE,
+            default => in_array($n2, [82, 84, 86, 88], true) ? ACCOUNT_REVENUE : ACCOUNT_EXPENSE,
+        };
+    }
+
+    private static function isReceivable(string $number): bool
+    {
+        foreach (['409', '4449', '445', '476', '478', '49'] as $p) {
+            if (str_starts_with($number, $p)) {
+                return true;
+            }
+        }
+
+        return str_starts_with($number, '41') && !str_starts_with($number, '419');
+    }
+
+    /**
+     * Importer le plan SYSCOHADA dans une entreprise (les comptes déjà présents sont conservés).
+     *
+     * @return int Nombre de comptes ajoutés
+     */
+    public static function importSyscohada(int $companyId, array $chart): int
+    {
+        $existing = [];
+        foreach (self::getByCompany($companyId) as $row) {
+            $existing[(string) $row['account_number']] = true;
+        }
+
+        $added = 0;
+        self::beginTransaction();
+        try {
+            foreach ($chart as $number => $name) {
+                $number = (string) $number;
+                if (isset($existing[$number])) {
+                    continue;
+                }
+                self::execute(
+                    'INSERT INTO accounts (company_id, account_number, name, type, is_active) VALUES (:c, :n, :l, :t, 1)',
+                    ['c' => $companyId, 'n' => $number, 'l' => $name, 't' => self::typeFromNumber($number)]
+                );
+                $added++;
+            }
+            self::commit();
+        } catch (\Throwable $e) {
+            self::rollback();
+            throw $e;
+        }
+
+        return $added;
+    }
 }

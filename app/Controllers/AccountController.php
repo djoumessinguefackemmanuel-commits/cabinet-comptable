@@ -19,8 +19,14 @@ class AccountController extends Controller
             ? Account::getAll()
             : Account::getByCompanies($companyIds);
 
+        $companyList = Company::getAll();
+        if ($companyIds !== null) {
+            $companyList = array_values(array_filter($companyList, static fn ($c) => in_array((int) $c['id'], $companyIds, true)));
+        }
+
         $this->view('accounting.accounts.index', [
-            'accounts' => $accounts
+            'accounts' => $accounts,
+            'companies' => $companyList,
         ]);
     }
 
@@ -85,5 +91,35 @@ class AccountController extends Controller
 
         Session::set('error', 'Impossible de créer ce compte comptable.');
         $this->redirect(url('accounting/accounts/create'));
+    }
+
+    /**
+     * Importer le plan comptable SYSCOHADA dans une entreprise.
+     */
+    public function importSyscohada(): void
+    {
+        $companyId = (int) ($_POST['company_id'] ?? 0);
+        $companyIds = \App\Core\Auth::companyIds();
+
+        if ($companyId <= 0 || Company::findById($companyId) === null
+            || ($companyIds !== null && !in_array($companyId, $companyIds, true))) {
+            Session::set('error', 'Veuillez choisir une entreprise valide.');
+            $this->redirect(url('accounting/accounts'));
+            return;
+        }
+
+        $chart = require BASE_PATH . '/database/syscohada.php';
+
+        try {
+            $added = Account::importSyscohada($companyId, $chart);
+            Session::set('success', $added > 0
+                ? "Plan comptable SYSCOHADA importé : {$added} compte(s) ajouté(s)."
+                : 'Le plan SYSCOHADA est déjà présent dans cette entreprise.');
+        } catch (\Throwable $e) {
+            error_log('Import SYSCOHADA : ' . $e->getMessage());
+            Session::set('error', "L'import du plan comptable a échoué.");
+        }
+
+        $this->redirect(url('accounting/accounts'));
     }
 }

@@ -138,6 +138,7 @@ $router->post('/exercises/{id}/delete', [ExerciseController::class, 'delete']);
 $router->get('/accounting/accounts', [AccountController::class, 'index']);
 $router->get('/accounting/accounts/create', [AccountController::class, 'create']);
 $router->post('/accounting/accounts/store', [AccountController::class, 'store']);
+$router->post('/accounting/accounts/import-syscohada', [AccountController::class, 'importSyscohada']);
 $router->post('/accounting/accounts', [AccountController::class, 'store']);
 
 $router->get('/accounting/journals', [JournalController::class, 'index']);

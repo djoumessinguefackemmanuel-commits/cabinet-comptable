@@ -19,6 +19,36 @@
 
     </div>
 
+    <?php if (!empty($companies)): ?>
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <form method="POST" action="<?= url('accounting/accounts/import-syscohada') ?>" class="row g-2 align-items-end"
+                  onsubmit="return confirm('Importer le plan comptable SYSCOHADA dans cette entreprise ? Les comptes déjà présents sont conservés.');">
+                <?= csrfField() ?>
+                <div class="col-12 col-lg">
+                    <label class="form-label fw-semibold mb-1" for="syscohadaCompany">
+                        <i class="fas fa-file-import me-1"></i> Plan comptable SYSCOHADA (OHADA)
+                    </label>
+                    <div class="text-muted small mb-2">
+                        Ajoute en un clic les comptes standards des classes 1 à 8 à l'entreprise choisie. Les comptes existants ne sont pas modifiés.
+                    </div>
+                    <select class="form-select" id="syscohadaCompany" name="company_id" required>
+                        <option value="">Sélectionner une entreprise</option>
+                        <?php foreach ($companies as $company): ?>
+                            <option value="<?= (int) $company['id'] ?>"><?= e($company['name']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-12 col-lg-auto">
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-download me-2"></i>Importer le plan SYSCOHADA
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <?php endif; ?>
+
     <div class="card shadow-sm border-0">
 
         <div class="card-header bg-white py-3">
