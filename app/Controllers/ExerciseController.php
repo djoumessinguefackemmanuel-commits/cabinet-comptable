@@ -147,7 +147,7 @@ class ExerciseController extends Controller
 
         $status = trim($_POST['status'] ?? '');
 
-        $validation = ExerciseValidator::validateStatus($status);
+        $validation = ExerciseValidator::validateStatus(['status' => $status]);
 
         if (!$validation['valid']) {
             Session::set('error', 'Le statut sélectionné est invalide.');

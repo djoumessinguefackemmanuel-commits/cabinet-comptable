@@ -1,5 +1,9 @@
 <?php
 
+namespace App\Validators;
+
+use App\Core\Validator;
+
 class CompanyValidator
 {
     /**
@@ -39,8 +43,8 @@ class CompanyValidator
         }
 
         return [
-            'valid' => !$validator->hasErrors(),
-            'errors' => $validator->getErrors()
+            'valid' => $validator->passes(),
+            'errors' => $validator->errors()
         ];
     }
 

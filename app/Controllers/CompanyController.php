@@ -38,7 +38,7 @@ class CompanyController extends Controller
         $data = [
             'name' => trim($_POST['name'] ?? ''),
             'email' => trim($_POST['email'] ?? ''),
-            'phone' => trim($_POST['phone'] ?? ''),
+            'phone' => \App\Services\PhoneNumber::combine($_POST['phone_code'] ?? '', $_POST['phone'] ?? ''),
             'address' => trim($_POST['address'] ?? ''),
             'city' => trim($_POST['city'] ?? ''),
             'tax_number' => trim($_POST['tax_number'] ?? ''),
@@ -116,7 +116,7 @@ class CompanyController extends Controller
         $data = [
             'name' => trim($_POST['name'] ?? ''),
             'email' => trim($_POST['email'] ?? ''),
-            'phone' => trim($_POST['phone'] ?? ''),
+            'phone' => \App\Services\PhoneNumber::combine($_POST['phone_code'] ?? '', $_POST['phone'] ?? ''),
             'address' => trim($_POST['address'] ?? ''),
             'city' => trim($_POST['city'] ?? ''),
             'tax_number' => trim($_POST['tax_number'] ?? ''),

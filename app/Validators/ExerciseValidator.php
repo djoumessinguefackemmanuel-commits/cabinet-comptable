@@ -1,5 +1,9 @@
 <?php
 
+namespace App\Validators;
+
+use App\Core\Validator;
+
 class ExerciseValidator
 {
     /**
@@ -36,8 +40,8 @@ class ExerciseValidator
         }
 
         return [
-            'valid' => !$validator->hasErrors(),
-            'errors' => $validator->getErrors()
+            'valid' => $validator->passes(),
+            'errors' => $validator->errors()
         ];
     }
 
@@ -72,8 +76,8 @@ class ExerciseValidator
         }
 
         return [
-            'valid' => !$validator->hasErrors(),
-            'errors' => $validator->getErrors()
+            'valid' => $validator->passes(),
+            'errors' => $validator->errors()
         ];
     }
 }

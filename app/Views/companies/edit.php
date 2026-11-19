@@ -59,18 +59,7 @@ $company = $company ?? [];
             </div>
 
             <div class="col-md-6 mb-3">
-                <label for="phone" class="form-label">
-                    Téléphone *
-                </label>
-
-                <input
-                    type="text"
-                    id="phone"
-                    name="phone"
-                    class="form-control"
-                    value="<?= e(old('phone', $company['phone'] ?? '')) ?>"
-                    required
-                >
+                <?php $phoneValue = old('phone', $company['phone'] ?? ''); include __DIR__ . '/_phone.php'; ?>
             </div>
 
             <div class="col-md-6 mb-3">
