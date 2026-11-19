@@ -564,3 +564,14 @@
         margin-bottom: 24px;
     }
 }
+
+/* Évite le zoom automatique d'iOS/Android au focus d'un champ (police < 16 px) */
+@media (hover: none) and (pointer: coarse), (max-width: 768px) {
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+    select,
+    textarea,
+    .form-control,
+    .form-select {
+        font-size: 16px !important;
+    }
+}
