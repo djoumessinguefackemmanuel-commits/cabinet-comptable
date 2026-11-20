@@ -117,9 +117,7 @@ $val = static fn (string $key) => $old[$key] ?? ($profile[$key] ?? '');
                                    autocomplete="family-name" value="<?= e((string) $val('last_name')) ?>">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" for="phone">Téléphone</label>
-                            <input class="form-control" id="phone" name="phone" maxlength="30" type="tel"
-                                   autocomplete="tel" placeholder="+237 6 00 00 00 00" value="<?= e((string) $val('phone')) ?>">
+                            <?php $phoneValue = (string) $val('phone'); $phoneRequired = false; include __DIR__ . '/../partials/phone_field.php'; ?>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="email_ro">E-mail</label>

@@ -56,7 +56,7 @@ $errors = $errors ?? [];
             </div>
 
             <div class="col-md-6 mb-3">
-                <?php $phoneValue = old('phone'); include __DIR__ . '/_phone.php'; ?>
+                <?php $phoneValue = old('phone'); include __DIR__ . '/../partials/phone_field.php'; ?>
             </div>
 
             <div class="col-md-6 mb-3">

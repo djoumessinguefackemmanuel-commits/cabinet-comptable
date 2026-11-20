@@ -59,7 +59,7 @@ class UserController extends Controller
             'first_name' => trim($_POST['first_name'] ?? ''),
             'last_name' => trim($_POST['last_name'] ?? ''),
             'email' => trim($_POST['email'] ?? ''),
-            'phone' => trim($_POST['phone'] ?? '') ?: null,
+            'phone' => \App\Services\PhoneNumber::combine($_POST['phone_code'] ?? '', $_POST['phone'] ?? '') ?: null,
             'password' => $_POST['password'] ?? '',
             'password_confirmation' => $_POST['password_confirmation'] ?? '',
             'role_id' => $_POST['role_id'] ?? '',
@@ -217,7 +217,7 @@ class UserController extends Controller
             'first_name' => trim($_POST['first_name'] ?? ''),
             'last_name' => trim($_POST['last_name'] ?? ''),
             'email' => trim($_POST['email'] ?? ''),
-            'phone' => trim($_POST['phone'] ?? ''),
+            'phone' => \App\Services\PhoneNumber::combine($_POST['phone_code'] ?? '', $_POST['phone'] ?? ''),
             'role_id' => $_POST['role_id'] ?? '',
             'status' => $_POST['status'] ?? USER_ACTIVE
         ];

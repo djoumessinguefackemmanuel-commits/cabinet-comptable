@@ -61,7 +61,7 @@ class ProfileController extends Controller
 
         $firstName = $this->clean($_POST['first_name'] ?? '');
         $lastName = $this->clean($_POST['last_name'] ?? '');
-        $phone = $this->clean($_POST['phone'] ?? '');
+        $phone = \App\Services\PhoneNumber::combine($_POST['phone_code'] ?? '', $this->clean($_POST['phone'] ?? ''));
         $errors = [];
 
         if (mb_strlen($firstName) < 2 || mb_strlen($firstName) > 100) {

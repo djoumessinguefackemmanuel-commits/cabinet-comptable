@@ -11,7 +11,7 @@
             <div class="col-md-6"><label class="form-label" for="first_name">Prénom</label><input class="form-control" id="first_name" name="first_name" required value="<?= e($formUser['first_name'] ?? '') ?>"></div>
             <div class="col-md-6"><label class="form-label" for="last_name">Nom</label><input class="form-control" id="last_name" name="last_name" required value="<?= e($formUser['last_name'] ?? '') ?>"></div>
             <div class="col-md-6"><label class="form-label" for="email">E-mail</label><input class="form-control" type="email" id="email" name="email" required value="<?= e($formUser['email'] ?? '') ?>"></div>
-            <div class="col-md-6"><label class="form-label" for="phone">Téléphone</label><input class="form-control" id="phone" name="phone" value="<?= e($formUser['phone'] ?? '') ?>"></div>
+            <div class="col-md-6"><?php $phoneValue = $formUser['phone'] ?? ''; $phoneRequired = false; include __DIR__ . '/../../partials/phone_field.php'; ?></div>
             <div class="col-md-6">
                 <label class="form-label" for="password">Mot de passe temporaire</label>
                 <div class="input-group">
