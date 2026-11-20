@@ -9,11 +9,20 @@ use App\Services\PhoneNumber;
 
 <div class="input-group">
     <select name="phone_code" id="phone_code" class="form-select" style="max-width: 190px" aria-label="Indicatif du pays">
-        <?php foreach (PhoneNumber::COUNTRIES as $code => $label): ?>
-            <option value="<?= e($code) ?>" <?= $code === $phoneCode ? 'selected' : '' ?>>
-                <?= e($label) ?> (<?= e($code) ?>)
-            </option>
-        <?php endforeach; ?>
+        <optgroup label="Afrique">
+            <?php foreach (PhoneNumber::AFRICA as $code => $label): ?>
+                <option value="<?= e($code) ?>" <?= $code === $phoneCode ? 'selected' : '' ?>>
+                    <?= e($label) ?> (<?= e($code) ?>)
+                </option>
+            <?php endforeach; ?>
+        </optgroup>
+        <optgroup label="Autres pays">
+            <?php foreach (PhoneNumber::OTHERS as $code => $label): ?>
+                <option value="<?= e($code) ?>" <?= $code === $phoneCode ? 'selected' : '' ?>>
+                    <?= e($label) ?> (<?= e($code) ?>)
+                </option>
+            <?php endforeach; ?>
+        </optgroup>
     </select>
 
     <input

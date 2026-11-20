@@ -9,16 +9,79 @@ class PhoneNumber
 {
     public const DEFAULT_CODE = '+237';
 
-    /** Indicatif => libellé (Cameroun en premier, puis zones CEMAC/UEMOA et principaux pays). */
-    public const COUNTRIES = [
-        '+237' => 'Cameroun', '+241' => 'Gabon', '+242' => 'Congo', '+243' => 'RD Congo', '+235' => 'Tchad',
-        '+236' => 'Centrafrique', '+240' => 'Guinée équatoriale', '+225' => 'Côte d\'Ivoire', '+221' => 'Sénégal',
-        '+223' => 'Mali', '+226' => 'Burkina Faso', '+227' => 'Niger', '+228' => 'Togo', '+229' => 'Bénin',
-        '+224' => 'Guinée', '+212' => 'Maroc', '+213' => 'Algérie', '+216' => 'Tunisie', '+234' => 'Nigeria',
-        '+233' => 'Ghana', '+27' => 'Afrique du Sud', '+33' => 'France', '+32' => 'Belgique', '+41' => 'Suisse',
-        '+44' => 'Royaume-Uni', '+49' => 'Allemagne', '+34' => 'Espagne', '+39' => 'Italie', '+1' => 'États-Unis / Canada',
-        '+971' => 'Émirats arabes unis', '+86' => 'Chine',
+    /** Pays d'Afrique (54), Cameroun en premier puis ordre alphabétique. */
+    public const AFRICA = [
+        '+237' => 'Cameroun',
+        '+27' => 'Afrique du Sud',
+        '+213' => 'Algérie',
+        '+244' => 'Angola',
+        '+267' => 'Botswana',
+        '+226' => 'Burkina Faso',
+        '+257' => 'Burundi',
+        '+229' => 'Bénin',
+        '+238' => 'Cabo Verde',
+        '+236' => 'Centrafrique',
+        '+269' => 'Comores',
+        '+242' => 'Congo',
+        '+225' => 'Côte d\'Ivoire',
+        '+253' => 'Djibouti',
+        '+20' => 'Égypte',
+        '+291' => 'Érythrée',
+        '+268' => 'Eswatini',
+        '+251' => 'Éthiopie',
+        '+241' => 'Gabon',
+        '+220' => 'Gambie',
+        '+233' => 'Ghana',
+        '+224' => 'Guinée',
+        '+240' => 'Guinée équatoriale',
+        '+245' => 'Guinée-Bissau',
+        '+254' => 'Kenya',
+        '+266' => 'Lesotho',
+        '+218' => 'Libye',
+        '+231' => 'Libéria',
+        '+261' => 'Madagascar',
+        '+265' => 'Malawi',
+        '+223' => 'Mali',
+        '+212' => 'Maroc',
+        '+230' => 'Maurice',
+        '+222' => 'Mauritanie',
+        '+258' => 'Mozambique',
+        '+264' => 'Namibie',
+        '+227' => 'Niger',
+        '+234' => 'Nigeria',
+        '+256' => 'Ouganda',
+        '+243' => 'RD Congo',
+        '+250' => 'Rwanda',
+        '+239' => 'Sao Tomé-et-Principe',
+        '+248' => 'Seychelles',
+        '+232' => 'Sierra Leone',
+        '+252' => 'Somalie',
+        '+249' => 'Soudan',
+        '+211' => 'Soudan du Sud',
+        '+221' => 'Sénégal',
+        '+255' => 'Tanzanie',
+        '+235' => 'Tchad',
+        '+228' => 'Togo',
+        '+216' => 'Tunisie',
+        '+260' => 'Zambie',
+        '+263' => 'Zimbabwe',
     ];
+
+    /** Autres pays fréquents. */
+    public const OTHERS = [
+        '+33' => 'France',
+        '+32' => 'Belgique',
+        '+41' => 'Suisse',
+        '+44' => 'Royaume-Uni',
+        '+49' => 'Allemagne',
+        '+34' => 'Espagne',
+        '+39' => 'Italie',
+        '+1' => 'États-Unis / Canada',
+        '+971' => 'Émirats arabes unis',
+        '+86' => 'Chine',
+    ];
+
+    public const COUNTRIES = [...self::AFRICA, ...self::OTHERS];
 
     /** Assemble indicatif + numéro local en "+237 670000000". */
     public static function combine(?string $code, ?string $local): string
