@@ -177,6 +177,9 @@ $router->get('/accounting/balance', [BalanceController::class, 'index']);
 */
 
 $router->get('/accounting/reconciliation', [ReconciliationController::class, 'index']);
+$router->post('/accounting/reconciliation/import', [ReconciliationController::class, 'import']);
+$router->post('/accounting/reconciliation/auto', [ReconciliationController::class, 'auto']);
+$router->post('/accounting/reconciliation/{id}/delete', [ReconciliationController::class, 'delete']);
 $router->post('/accounting/reconciliation/{id}/reconcile', [ReconciliationController::class, 'reconcile']);
 $router->post('/accounting/reconciliation/{id}/unreconcile', [ReconciliationController::class, 'unreconcile']);
 

@@ -16,7 +16,7 @@ class Tenant
     private static ?array $companyIds = null;
 
     /** Tables rattachées à un cabinet via company_id. */
-    private const BY_COMPANY = ['exercises', 'journals', 'accounts', 'entries', 'documents', 'invoices', 'taxes'];
+    private const BY_COMPANY = ['exercises', 'journals', 'accounts', 'entries', 'documents', 'invoices', 'taxes', 'bank_statement_lines'];
 
     /** Paramètres de requête (GET/POST) qui désignent des enregistrements à contrôler. */
     private const PARAM_TABLES = [
@@ -172,6 +172,10 @@ class Tenant
             return false;
         }
 
+        if ($table === 'bank_statement_lines') {
+            \App\Models\BankStatement::ensureSchema();
+        }
+
         $sql = match (true) {
             $table === 'companies' => 'SELECT tenant_id FROM companies WHERE id = ?',
             $table === 'users' => 'SELECT tenant_id FROM users WHERE id = ?',
@@ -209,6 +213,7 @@ class Tenant
             '#^/companies/(\d+)(?:/|$)#' => 'companies',
             '#^/exercises/(\d+)(?:/|$)#' => 'exercises',
             '#^/(?:accounting|api)/entries/(\d+)(?:/|$)#' => 'entries',
+            '#^/accounting/reconciliation/(\d+)(?:/|$)#' => 'bank_statement_lines',
             '#^/documents/(\d+)(?:/|$)#' => 'documents',
             '#^/invoices/(\d+)(?:/|$)#' => 'invoices',
             '#^/admin/support/(\d+)(?:/|$)#' => 'support_requests',
