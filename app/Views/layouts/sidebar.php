@@ -31,6 +31,13 @@ $userRole = $currentUser['role'] ?? '';
             <div class="sidebar-section">
                 <span class="sidebar-section-title">ADMINISTRATION</span>
 
+                <?php if (\App\Core\Tenant::isOwner()): ?>
+                    <a href="<?= url('platform/tenants') ?>" class="sidebar-link">
+                        <i class="fas fa-landmark"></i>
+                        <span>Cabinets clients</span>
+                    </a>
+                <?php endif; ?>
+
                 <a href="<?= url('users') ?>" class="sidebar-link">
                     <i class="fas fa-users"></i>
                     <span>Utilisateurs</span>

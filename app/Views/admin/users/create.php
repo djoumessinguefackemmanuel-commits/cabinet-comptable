@@ -7,6 +7,19 @@
 <section class="card"><div class="card-body">
     <form method="POST" action="<?= url('users/store') ?>">
         <?= csrfField() ?>
+<?php if (\App\Core\Tenant::isOwner()): ?>
+
+    <div class="mb-3">
+        <label for="tenant_id" class="form-label">Cabinet *</label>
+        <select name="tenant_id" id="tenant_id" class="form-select" required>
+            <option value="">Sélectionner un cabinet</option>
+            <?php foreach (\App\Core\Tenant::all() as $tenantRow): ?>
+                <option value="<?= (int) $tenantRow['id'] ?>" <?= (int) ($old['tenant_id'] ?? 0) === (int) $tenantRow['id'] ? 'selected' : '' ?>><?= e($tenantRow['name']) ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+<?php endif; ?>
+
         <div class="row g-3">
             <div class="col-md-6"><label class="form-label" for="first_name">Prénom</label><input class="form-control" id="first_name" name="first_name" required value="<?= e($formUser['first_name'] ?? '') ?>"></div>
             <div class="col-md-6"><label class="form-label" for="last_name">Nom</label><input class="form-control" id="last_name" name="last_name" required value="<?= e($formUser['last_name'] ?? '') ?>"></div>

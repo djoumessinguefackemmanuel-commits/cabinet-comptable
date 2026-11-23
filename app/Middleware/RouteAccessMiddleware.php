@@ -5,6 +5,7 @@ namespace App\Middleware;
 use App\Core\Auth;
 use App\Core\Database;
 use App\Core\Session;
+use App\Core\Tenant;
 use App\Models\Exercise;
 use App\Models\User;
 use App\Models\UserCompany;
@@ -37,7 +38,27 @@ class RouteAccessMiddleware
             exit;
         }
 
+        Tenant::ensureSchema();
+
         $user = User::findById((int) Auth::id());
+        if ($user) {
+            // Le cabinet est relu à chaque requête : un changement s'applique immédiatement.
+            $_SESSION['user']['tenant_id'] = $user['tenant_id'] ?? null;
+            $_SESSION['user']['role'] = $user['role'] ?? ($_SESSION['user']['role'] ?? null);
+            Tenant::reset();
+        }
+
+        if ($user && ($user['tenant_id'] ?? null) !== null) {
+            $tenantStatus = Database::connect()->prepare('SELECT status FROM tenants WHERE id = ?');
+            $tenantStatus->execute([(int) $user['tenant_id']]);
+            if (($tenantStatus->fetchColumn() ?: 'suspended') !== 'active') {
+                Auth::logout();
+                Session::set('error', 'L\'accès de votre cabinet est suspendu. Contactez le support.');
+                header('Location: ' . url('login'));
+                exit;
+            }
+        }
+
         if (!$user || ($user['status'] ?? '') !== USER_ACTIVE) {
             Auth::logout();
             Session::set('error', 'Votre session a expiré ou votre compte n’est plus actif.');
@@ -58,6 +79,17 @@ class RouteAccessMiddleware
 
         $role = $user['role'] ?? '';
         if (!$this->roleCanAccess($method, $path, $role)) {
+            $this->deny($path);
+            return false;
+        }
+
+        if (str_starts_with($path, '/platform') && !Tenant::isOwner()) {
+            $this->deny($path);
+            return false;
+        }
+
+        // Isolation entre cabinets : aucun identifiant d'un autre cabinet n'est accepté.
+        if (!Tenant::requestAllowed($path)) {
             $this->deny($path);
             return false;
         }

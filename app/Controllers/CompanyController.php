@@ -56,6 +56,16 @@ class CompanyController extends Controller
             return;
         }
 
+        $tenantId = \App\Core\Tenant::forNewRecord();
+        if ($tenantId === false) {
+            $this->view('companies.create', [
+                'errors' => ['Veuillez choisir le cabinet de cette entreprise.'],
+                'old' => $data
+            ]);
+            return;
+        }
+        $data['tenant_id'] = $tenantId;
+
         if (!Company::create($data)) {
             Session::set('error', 'Impossible d’enregistrer cette entreprise.');
             $this->redirect(url('companies/create'));

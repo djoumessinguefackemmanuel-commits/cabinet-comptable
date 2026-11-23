@@ -68,7 +68,7 @@ class SupportController extends Controller
 
         $notificationFailed = false;
         $notifiedAdministrators = 0;
-        foreach (User::getAllByRole(ROLE_ADMIN) as $administrator) {
+        foreach (User::supportRecipients(Auth::check() ? \App\Core\Tenant::id() : null) as $administrator) {
             if (($administrator['status'] ?? '') !== USER_ACTIVE) {
                 continue;
             }

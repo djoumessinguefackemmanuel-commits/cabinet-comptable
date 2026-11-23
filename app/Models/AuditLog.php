@@ -12,6 +12,7 @@ class AuditLog extends Model
     public static function getRecent(int $limit = 50): array
     {
         $limit = max(1, min($limit, 500));
+        [$scope, $scopeParams] = \App\Core\Tenant::where('u.tenant_id');
 
         $sql = "
             SELECT
@@ -21,11 +22,12 @@ class AuditLog extends Model
                 u.email
             FROM audit_logs al
             LEFT JOIN users u ON u.id = al.user_id
+            WHERE {$scope}
             ORDER BY al.created_at DESC
             LIMIT {$limit}
         ";
 
-        return self::query($sql)->fetchAll(\PDO::FETCH_ASSOC);
+        return self::query($sql, $scopeParams)->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     /**

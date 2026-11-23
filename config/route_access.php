@@ -31,6 +31,7 @@ return [
     ['methods' => ['GET'], 'pattern' => '#^/invoices$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT, ROLE_ACCOUNTANT, ROLE_CLIENT]],
     ['methods' => ['POST'], 'pattern' => '#^/invoices/(?:store|.*)$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT]],
     ['methods' => ['GET', 'POST'], 'pattern' => '#^/notifications(?:/.*)?$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT, ROLE_ACCOUNTANT, ROLE_CLIENT]],
+    ['methods' => ['GET', 'POST'], 'pattern' => '#^/platform(?:/.*)?$#', 'roles' => [ROLE_ADMIN]],
     ['methods' => ['GET'], 'pattern' => '#^/audit(?:/.*)?$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT]],
     ['methods' => ['GET', 'POST'], 'pattern' => '#^/settings(?:/.*)?$#', 'roles' => [ROLE_ADMIN]],
     ['methods' => ['GET', 'POST'], 'pattern' => '#^/admin/support(?:/.*)?$#', 'roles' => [ROLE_ADMIN]],

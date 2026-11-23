@@ -60,25 +60,29 @@ class DashboardController extends Controller
                 'total_exercises' => $this->countRows($pdo, 'exercises'),
                 'total_entries' => $this->countRows($pdo, 'entries')
             ],
-            'recentUsers' => $pdo->query("
+            'recentUsers' => $this->scopedRows($pdo, "
                 SELECT u.first_name, u.last_name, u.email, u.status, r.name AS role_name
                 FROM users u
                 LEFT JOIN roles r ON r.id = u.role_id
+                WHERE {scope}
                 ORDER BY u.created_at DESC
                 LIMIT 5
-            ")->fetchAll(),
-            'recentCompanies' => $pdo->query("
-                SELECT name, email, phone, city
-                FROM companies
-                ORDER BY created_at DESC
+            ", 'u.tenant_id'),
+            'recentCompanies' => $this->scopedRows($pdo, "
+                SELECT c.name, c.email, c.phone, c.city
+                FROM companies c
+                WHERE {scope}
+                ORDER BY c.created_at DESC
                 LIMIT 5
-            ")->fetchAll(),
-            'recentActivities' => $pdo->query("
-                SELECT action, description, created_at
-                FROM audit_logs
-                ORDER BY created_at DESC
+            ", 'c.tenant_id'),
+            'recentActivities' => $this->scopedRows($pdo, "
+                SELECT l.action, l.description, l.created_at
+                FROM audit_logs l
+                LEFT JOIN users lu ON lu.id = l.user_id
+                WHERE {scope}
+                ORDER BY l.created_at DESC
                 LIMIT 5
-            ")->fetchAll()
+            ", 'lu.tenant_id')
         ];
 
         $this->render('admin.dashboard', $data, 'layouts.main');
@@ -185,6 +189,16 @@ class DashboardController extends Controller
     /**
      * Compter les enregistrements d'une table.
      */
+    /** Exécute une requête où {scope} est remplacé par le filtre « cabinet de l'utilisateur ». */
+    private function scopedRows($pdo, string $sql, string $tenantColumn): array
+    {
+        [$scope, $params] = \App\Core\Tenant::where($tenantColumn);
+        $statement = $pdo->prepare(str_replace('{scope}', $scope, $sql));
+        $statement->execute($params);
+
+        return $statement->fetchAll();
+    }
+
     private function countRows($pdo, string $table): int
     {
         $allowedTables = [
@@ -196,6 +210,19 @@ class DashboardController extends Controller
 
         if (!in_array($table, $allowedTables, true)) {
             return 0;
+        }
+
+        // Comptages limités au cabinet de l'utilisateur (le propriétaire de la plateforme voit tout).
+        if ($table === 'users') {
+            return \App\Models\User::countAll();
+        }
+        if ($table === 'companies') {
+            return \App\Models\Company::countAll();
+        }
+
+        $companyIds = Auth::companyIds();
+        if ($companyIds !== null) {
+            return $this->countRowsByCompanies($pdo, $table, $companyIds);
         }
 
         $stmt = $pdo->query("SELECT COUNT(*) FROM {$table}");
@@ -249,10 +276,18 @@ class DashboardController extends Controller
      */
     private function countEntriesByStatus($pdo, string $status): int
     {
+        $companyIds = Auth::companyIds();
+        if ($companyIds === []) {
+            return 0;
+        }
+
+        $filter = $companyIds === null
+            ? ''
+            : ' AND company_id IN (' . implode(',', array_map('intval', $companyIds)) . ')';
         $stmt = $pdo->prepare(
             "SELECT COUNT(*)
              FROM entries
-             WHERE status = :status"
+             WHERE status = :status{$filter}"
         );
 
         $stmt->execute([
@@ -267,11 +302,6 @@ class DashboardController extends Controller
      */
     private function countActiveUsers($pdo): int
     {
-        $stmt = $pdo->prepare(
-            "SELECT COUNT(*) FROM users WHERE status = :status"
-        );
-        $stmt->execute(['status' => USER_ACTIVE]);
-
-        return (int) $stmt->fetchColumn();
+        return \App\Models\User::countByStatus(USER_ACTIVE);
     }
 }

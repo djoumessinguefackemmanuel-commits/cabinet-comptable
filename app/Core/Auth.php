@@ -33,14 +33,22 @@ class Auth
         }
 
         $role = $_SESSION['user']['role'] ?? '';
+        $tenantIds = Tenant::companyIds(); // null : propriétaire de la plateforme (aucune limite)
+
         if (in_array($role, [ROLE_ADMIN, ROLE_EXPERT], true)) {
-            return null;
+            return $tenantIds;
         }
 
         $userId = self::id();
-        return $userId === null
-            ? []
-            : UserCompany::getCompanyIdsByUser($userId);
+        if ($userId === null) {
+            return [];
+        }
+
+        $ids = UserCompany::getCompanyIdsByUser($userId);
+
+        return $tenantIds === null
+            ? $ids
+            : array_values(array_intersect($ids, $tenantIds));
     }
 
     public static function login(array $credentials): bool

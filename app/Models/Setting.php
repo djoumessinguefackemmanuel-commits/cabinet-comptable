@@ -3,21 +3,42 @@
 namespace App\Models;
 
 use App\Core\Model;
+use App\Core\Tenant;
 
 class Setting extends Model
 {
+    /** Préfixe de clé propre au cabinet courant (vide pour le propriétaire de la plateforme). */
+    private static function prefix(): string
+    {
+        $tenantId = Tenant::id();
+
+        return $tenantId === null ? '' : 'tenant_' . $tenantId . '.';
+    }
+
     /**
      * Récupérer tous les paramètres.
      */
     public static function getAll(): array
     {
-        $sql = "
-            SELECT *
-            FROM settings
-            ORDER BY setting_key ASC
-        ";
+        $prefix = self::prefix();
+        if ($prefix === '') {
+            // Propriétaire : paramètres généraux de la plateforme (sans préfixe de cabinet).
+            $rows = self::query("SELECT * FROM settings WHERE setting_key NOT LIKE 'tenant_%.%' ORDER BY setting_key ASC")
+                ->fetchAll(\PDO::FETCH_ASSOC);
 
-        return self::query($sql)->fetchAll(\PDO::FETCH_ASSOC);
+            return $rows;
+        }
+
+        $rows = self::query(
+            "SELECT * FROM settings WHERE setting_key LIKE ? ORDER BY setting_key ASC",
+            [$prefix . '%']
+        )->fetchAll(\PDO::FETCH_ASSOC);
+
+        foreach ($rows as &$row) {
+            $row['setting_key'] = substr($row['setting_key'], strlen($prefix));
+        }
+
+        return $rows;
     }
 
     /**
@@ -33,7 +54,7 @@ class Setting extends Model
         ";
 
         $result = self::query($sql, [
-            'setting_key' => $key
+            'setting_key' => self::prefix() . $key
         ]);
 
         $setting = $result->fetch(\PDO::FETCH_ASSOC);
@@ -47,6 +68,7 @@ class Setting extends Model
     public static function set(string $key, string $value): bool
     {
         $existing = self::get($key);
+        $key = self::prefix() . $key;
 
         if ($existing !== null) {
             $sql = "
@@ -108,7 +130,7 @@ class Setting extends Model
         ";
 
         return self::execute($sql, [
-            'setting_key' => $key
+            'setting_key' => self::prefix() . $key
         ]);
     }
 }

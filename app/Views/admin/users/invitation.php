@@ -14,7 +14,7 @@ $message = "Bonjour " . ($invited['first_name'] ?? '') . ",\n\n"
         <h1 class="page-title"><?= $isReset ? 'Nouveau mot de passe généré' : 'Compte créé' ?></h1>
         <p class="page-subtitle">Envoyez ces informations à <?= e($name) ?>. Elles ne seront plus affichées ensuite.</p>
     </div>
-    <a class="btn btn-outline-secondary" href="<?= url('users') ?>"><i class="fas fa-arrow-left"></i> Retour aux utilisateurs</a>
+    <a class="btn btn-outline-secondary" href="<?= e($backUrl ?? url('users')) ?>"><i class="fas fa-arrow-left"></i> <?= e($backLabel ?? 'Retour aux utilisateurs') ?></a>
 </div>
 
 <section class="card">

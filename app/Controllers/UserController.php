@@ -81,6 +81,18 @@ class UserController extends Controller
         unset($data['password_confirmation']);
         $data['role_id'] = (int) $data['role_id'];
 
+        $tenantId = \App\Core\Tenant::forNewRecord();
+        if ($tenantId === false) {
+            unset($data['password']);
+            $this->view('admin.users.create', [
+                'errors' => ['Veuillez choisir le cabinet de cet utilisateur.'],
+                'old' => $data,
+                'roles' => Role::getAll()
+            ]);
+            return;
+        }
+        $data['tenant_id'] = $tenantId;
+
         try {
             $createdUserId = User::create($data);
         } catch (\PDOException $exception) {

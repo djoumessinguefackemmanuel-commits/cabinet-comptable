@@ -3,6 +3,7 @@
 use App\Controllers\AuthController;
 use App\Controllers\AccountSecurityController;
 use App\Controllers\ProfileController;
+use App\Controllers\PlatformController;
 use App\Controllers\DashboardController;
 use App\Controllers\UserController;
 use App\Controllers\RoleController;
@@ -240,6 +241,10 @@ $router->post('/notifications/read-all', [NotificationController::class, 'markAl
 | Audit et paramètres
 |--------------------------------------------------------------------------
 */
+
+$router->get('/platform/tenants', [PlatformController::class, 'index']);
+$router->post('/platform/tenants/store', [PlatformController::class, 'store']);
+$router->post('/platform/tenants/{id}/toggle', [PlatformController::class, 'toggle']);
 
 $router->get('/audit', [AuditController::class, 'index']);
 

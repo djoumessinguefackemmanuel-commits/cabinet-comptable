@@ -22,6 +22,19 @@ $errors = $errors ?? [];
     <form action="<?= url('companies') ?>" method="POST">
 
         <?= csrfField() ?>
+<?php if (\App\Core\Tenant::isOwner()): ?>
+
+    <div class="mb-3">
+        <label for="tenant_id" class="form-label">Cabinet *</label>
+        <select name="tenant_id" id="tenant_id" class="form-select" required>
+            <option value="">Sélectionner un cabinet</option>
+            <?php foreach (\App\Core\Tenant::all() as $tenantRow): ?>
+                <option value="<?= (int) $tenantRow['id'] ?>" <?= (int) ($old['tenant_id'] ?? 0) === (int) $tenantRow['id'] ? 'selected' : '' ?>><?= e($tenantRow['name']) ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+<?php endif; ?>
+
 
         <div class="row">
 

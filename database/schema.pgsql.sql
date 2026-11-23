@@ -322,3 +322,20 @@ CREATE INDEX IF NOT EXISTS idx_app_sessions_expires ON app_sessions (expires_at)
 
 -- Mot de passe temporaire : l'utilisateur doit choisir le sien à la première connexion
 ALTER TABLE users ADD COLUMN IF NOT EXISTS must_change_password SMALLINT NOT NULL DEFAULT 0;
+
+-- Cabinets clients (multi-tenant) : l'administrateur sans cabinet (tenant_id NULL) est le propriétaire de la plateforme.
+CREATE TABLE IF NOT EXISTS tenants (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS tenant_id INTEGER NULL REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS tenant_id INTEGER NULL REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+CREATE INDEX IF NOT EXISTS idx_users_tenant_id ON users (tenant_id);
+CREATE INDEX IF NOT EXISTS idx_companies_tenant_id ON companies (tenant_id);
+INSERT INTO tenants (name) SELECT 'Cabinet principal' WHERE NOT EXISTS (SELECT 1 FROM tenants);
+UPDATE companies SET tenant_id = (SELECT MIN(id) FROM tenants) WHERE tenant_id IS NULL;
+UPDATE users SET tenant_id = (SELECT MIN(id) FROM tenants)
+ WHERE tenant_id IS NULL
+   AND id <> (SELECT MIN(u.id) FROM users u JOIN roles r ON r.id = u.role_id WHERE r.name = 'admin');

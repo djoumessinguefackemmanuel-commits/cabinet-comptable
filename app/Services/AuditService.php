@@ -67,6 +67,7 @@ class AuditService
     {
         try {
             $limit = max(1, min($limit, 500));
+            [$scope, $scopeParams] = \App\Core\Tenant::where('users.tenant_id');
 
             $sql = "
                 SELECT
@@ -76,12 +77,16 @@ class AuditService
                     users.email
                 FROM audit_logs
                 LEFT JOIN users ON users.id = audit_logs.user_id
+                WHERE {$scope}
                 ORDER BY audit_logs.created_at DESC
-                LIMIT :limit
+                LIMIT ?
             ";
 
             $stmt = Database::getConnection()->prepare($sql);
-            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            foreach ($scopeParams as $i => $value) {
+                $stmt->bindValue($i + 1, $value);
+            }
+            $stmt->bindValue(count($scopeParams) + 1, $limit, PDO::PARAM_INT);
             $stmt->execute();
 
             return $stmt->fetchAll(PDO::FETCH_ASSOC);

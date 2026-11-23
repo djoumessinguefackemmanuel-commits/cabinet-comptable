@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Core\Model;
+use App\Core\Tenant;
 use PDO;
 
 class User extends Model
@@ -14,16 +15,18 @@ class User extends Model
      */
     public static function getAll(): array
     {
+        [$scope, $scopeParams] = Tenant::where('u.tenant_id');
         $sql = "
             SELECT
                 u.*,
                 r.name AS role_name
             FROM users u
             LEFT JOIN roles r ON r.id = u.role_id
+            WHERE {$scope}
             ORDER BY u.created_at DESC
         ";
 
-        return self::query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        return self::query($sql, $scopeParams)->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -31,17 +34,33 @@ class User extends Model
      */
     public static function getAllByRole(string $role): array
     {
+        [$scope, $scopeParams] = Tenant::where('u.tenant_id');
         $sql = "
             SELECT
                 u.*,
                 r.name AS role_name
             FROM users u
             INNER JOIN roles r ON r.id = u.role_id
-            WHERE r.name = ?
+            WHERE r.name = ? AND {$scope}
             ORDER BY u.created_at DESC
         ";
 
-        return self::query($sql, [$role])->fetchAll(PDO::FETCH_ASSOC);
+        return self::query($sql, array_merge([$role], $scopeParams))->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Administrateurs à prévenir d'une demande de support : ceux du cabinet concerné,
+     * ou le propriétaire de la plateforme (administrateur sans cabinet) pour un visiteur anonyme.
+     */
+    public static function supportRecipients(?int $tenantId): array
+    {
+        $sql = "
+            SELECT u.*, r.name AS role_name
+            FROM users u
+            INNER JOIN roles r ON r.id = u.role_id
+            WHERE r.name = ? AND " . ($tenantId === null ? 'u.tenant_id IS NULL' : 'u.tenant_id = ?');
+
+        return self::query($sql, $tenantId === null ? [ROLE_ADMIN] : [ROLE_ADMIN, $tenantId])->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -133,8 +152,9 @@ class User extends Model
                 password,
                 role_id,
                 status,
+                tenant_id,
                 created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())
         ";
 
         $password = password_hash($data['password'], PASSWORD_DEFAULT);
@@ -146,7 +166,8 @@ class User extends Model
             $data['phone'] ?? null,
             $password,
             $data['role_id'],
-            $data['status'] ?? USER_ACTIVE
+            $data['status'] ?? USER_ACTIVE,
+            array_key_exists('tenant_id', $data) ? $data['tenant_id'] : Tenant::id()
         ]);
 
         return $result ? (int) self::lastInsertId() : false;
@@ -294,8 +315,11 @@ class User extends Model
      */
     public static function countAll(): int
     {
+        [$scope, $scopeParams] = Tenant::where('tenant_id');
+
         return (int) self::query(
-            "SELECT COUNT(*) FROM users"
+            "SELECT COUNT(*) FROM users WHERE {$scope}",
+            $scopeParams
         )->fetchColumn();
     }
 
@@ -304,9 +328,11 @@ class User extends Model
      */
     public static function countByStatus(string $status): int
     {
+        [$scope, $scopeParams] = Tenant::where('tenant_id');
+
         return (int) self::query(
-            "SELECT COUNT(*) FROM users WHERE status = ?",
-            [$status]
+            "SELECT COUNT(*) FROM users WHERE status = ? AND {$scope}",
+            array_merge([$status], $scopeParams)
         )->fetchColumn();
     }
 }

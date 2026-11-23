@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Core\Model;
+use App\Core\Tenant;
 
 class Company extends Model
 {
@@ -11,17 +12,19 @@ class Company extends Model
      */
     public static function getAll(): array
     {
+        [$scope, $scopeParams] = Tenant::where('c.tenant_id');
         $sql = "
             SELECT
                 c.*,
                 COUNT(DISTINCT uc.user_id) AS users_count
             FROM companies c
             LEFT JOIN user_companies uc ON uc.company_id = c.id
+            WHERE {$scope}
             GROUP BY c.id
             ORDER BY c.created_at DESC
         ";
 
-        return self::query($sql)->fetchAll(\PDO::FETCH_ASSOC);
+        return self::query($sql, $scopeParams)->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     /**
@@ -76,6 +79,7 @@ class Company extends Model
                 city,
                 tax_number,
                 registration_number,
+                tenant_id,
                 created_at,
                 updated_at
             ) VALUES (
@@ -86,6 +90,7 @@ class Company extends Model
                 :city,
                 :tax_number,
                 :registration_number,
+                :tenant_id,
                 NOW(),
                 NOW()
             )
@@ -98,7 +103,8 @@ class Company extends Model
             'address' => $data['address'] ?? null,
             'city' => $data['city'] ?? null,
             'tax_number' => $data['tax_number'] ?? null,
-            'registration_number' => $data['registration_number'] ?? null
+            'registration_number' => $data['registration_number'] ?? null,
+            'tenant_id' => array_key_exists('tenant_id', $data) ? $data['tenant_id'] : Tenant::id()
         ]);
 
         if (!$success) {
@@ -199,9 +205,10 @@ class Company extends Model
      */
     public static function countAll(): int
     {
-        $sql = "SELECT COUNT(*) AS total FROM companies";
+        [$scope, $scopeParams] = Tenant::where('tenant_id');
+        $sql = "SELECT COUNT(*) AS total FROM companies WHERE {$scope}";
 
-        $result = self::query($sql);
+        $result = self::query($sql, $scopeParams);
 
         return (int) $result->fetchColumn();
     }
