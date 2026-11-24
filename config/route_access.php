@@ -23,6 +23,7 @@ return [
     ['methods' => ['POST'], 'pattern' => '#^/accounting/entries(?:/.*)?$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT, ROLE_ACCOUNTANT]],
     ['methods' => ['GET'], 'pattern' => '#^/accounting/(?:ledger|balance|reconciliation)$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT, ROLE_ACCOUNTANT]],
     ['methods' => ['POST'], 'pattern' => '#^/accounting/reconciliation/.*$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT, ROLE_ACCOUNTANT]],
+    ['methods' => ['GET', 'POST'], 'pattern' => '#^/fixed-assets(?:/.*)?$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT, ROLE_ACCOUNTANT]],
     ['methods' => ['GET'], 'pattern' => '#^/taxes(?:/.*)?$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT, ROLE_ACCOUNTANT]],
     ['methods' => ['POST'], 'pattern' => '#^/taxes(?:/.*)?$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT]],
     ['methods' => ['GET'], 'pattern' => '#^/reports(?:/.*)?$#', 'roles' => [ROLE_ADMIN, ROLE_EXPERT, ROLE_ACCOUNTANT, ROLE_CLIENT]],

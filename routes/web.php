@@ -1,6 +1,7 @@
 <?php
 
 use App\Controllers\AuthController;
+use App\Controllers\FixedAssetController;
 use App\Controllers\AccountSecurityController;
 use App\Controllers\ProfileController;
 use App\Controllers\PlatformController;
@@ -185,6 +186,20 @@ $router->post('/accounting/reconciliation/auto', [ReconciliationController::clas
 $router->post('/accounting/reconciliation/{id}/delete', [ReconciliationController::class, 'delete']);
 $router->post('/accounting/reconciliation/{id}/reconcile', [ReconciliationController::class, 'reconcile']);
 $router->post('/accounting/reconciliation/{id}/unreconcile', [ReconciliationController::class, 'unreconcile']);
+
+/*
+|--------------------------------------------------------------------------
+| Immobilisations
+|--------------------------------------------------------------------------
+*/
+
+$router->get('/fixed-assets', [FixedAssetController::class, 'index']);
+$router->get('/fixed-assets/create', [FixedAssetController::class, 'create']);
+$router->post('/fixed-assets/store', [FixedAssetController::class, 'store']);
+$router->post('/fixed-assets/post', [FixedAssetController::class, 'post']);
+$router->get('/fixed-assets/{id}', [FixedAssetController::class, 'show']);
+$router->post('/fixed-assets/{id}/dispose', [FixedAssetController::class, 'dispose']);
+$router->post('/fixed-assets/{id}/delete', [FixedAssetController::class, 'delete']);
 
 /*
 |--------------------------------------------------------------------------

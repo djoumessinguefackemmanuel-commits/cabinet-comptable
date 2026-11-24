@@ -16,14 +16,14 @@ class Tenant
     private static ?array $companyIds = null;
 
     /** Tables rattachées à un cabinet via company_id. */
-    private const BY_COMPANY = ['exercises', 'journals', 'accounts', 'entries', 'documents', 'invoices', 'taxes', 'bank_statement_lines'];
+    private const BY_COMPANY = ['exercises', 'journals', 'accounts', 'entries', 'documents', 'invoices', 'taxes', 'bank_statement_lines', 'fixed_assets'];
 
     /** Paramètres de requête (GET/POST) qui désignent des enregistrements à contrôler. */
     private const PARAM_TABLES = [
         'company_id' => 'companies', 'company_ids' => 'companies',
         'exercise_id' => 'exercises', 'journal_id' => 'journals', 'account_id' => 'accounts',
         'entry_id' => 'entries', 'user_id' => 'users', 'client_id' => 'users',
-        'document_id' => 'documents', 'invoice_id' => 'invoices',
+        'document_id' => 'documents', 'asset_id' => 'fixed_assets', 'invoice_id' => 'invoices',
     ];
 
     /** Crée les colonnes/tables nécessaires si la migration n'a pas encore été appliquée. */
@@ -175,6 +175,9 @@ class Tenant
         if ($table === 'bank_statement_lines') {
             \App\Models\BankStatement::ensureSchema();
         }
+        if ($table === 'fixed_assets') {
+            \App\Models\FixedAsset::ensureSchema();
+        }
 
         $sql = match (true) {
             $table === 'companies' => 'SELECT tenant_id FROM companies WHERE id = ?',
@@ -214,6 +217,7 @@ class Tenant
             '#^/exercises/(\d+)(?:/|$)#' => 'exercises',
             '#^/(?:accounting|api)/entries/(\d+)(?:/|$)#' => 'entries',
             '#^/accounting/reconciliation/(\d+)(?:/|$)#' => 'bank_statement_lines',
+            '#^/fixed-assets/(\d+)(?:/|$)#' => 'fixed_assets',
             '#^/documents/(\d+)(?:/|$)#' => 'documents',
             '#^/invoices/(\d+)(?:/|$)#' => 'invoices',
             '#^/admin/support/(\d+)(?:/|$)#' => 'support_requests',

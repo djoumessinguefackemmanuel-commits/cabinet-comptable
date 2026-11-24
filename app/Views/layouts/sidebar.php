@@ -91,6 +91,11 @@ $userRole = $currentUser['role'] ?? '';
                     <span>Balance</span>
                 </a>
 
+                <a href="<?= url('fixed-assets') ?>" class="sidebar-link">
+                    <i class="fas fa-building"></i>
+                    <span>Immobilisations</span>
+                </a>
+
                 <a href="<?= url('accounting/reconciliation') ?>" class="sidebar-link">
                     <i class="fas fa-exchange-alt"></i>
                     <span>Rapprochements</span>

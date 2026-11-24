@@ -173,7 +173,7 @@ class Entry extends Model
      */
     public static function createWithLines(array $data, array $lines): int|false
     {
-        $pdo = self::getConnection();
+        $pdo = \App\Core\Database::connect();
 
         try {
             $pdo->beginTransaction();
