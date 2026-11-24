@@ -1,6 +1,19 @@
 <div class="page-header">
     <div><h1 class="page-title">Paramètres</h1><p class="page-subtitle">Paramètres généraux enregistrés pour l’application.</p></div>
 </div>
+<section class="card" style="margin-bottom:1rem"><div class="card-body">
+    <h2 style="font-size:1.1rem">Validation des écritures</h2>
+    <form method="POST" action="<?= url('settings/workflow') ?>">
+        <?= csrfField() ?>
+        <input type="hidden" name="require_approval" value="0">
+        <label style="display:flex;gap:.6rem;align-items:flex-start;margin-bottom:.75rem">
+            <input type="checkbox" name="require_approval" value="1" <?= !empty($workflowRequired) ? 'checked' : '' ?> style="margin-top:.25rem">
+            <span><strong>Approbation obligatoire</strong><br>
+            <small>Les comptables soumettent leurs écritures ; seuls l’administrateur, l’expert et les utilisateurs ayant le droit d’approbation (Utilisateurs) peuvent les valider. Personne ne valide sa propre soumission (sauf l’administrateur).</small></span>
+        </label>
+        <button class="btn btn-primary" type="submit"><i class="fas fa-save"></i> Enregistrer</button>
+    </form>
+</div></section>
 <section class="card"><div class="card-body">
     <form method="POST" action="<?= url('settings/update') ?>">
         <?= csrfField() ?>

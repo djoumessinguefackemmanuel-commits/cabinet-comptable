@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Services\EntryWorkflow;
 use App\Core\Controller;
 use App\Core\Auth;
 use App\Core\Session;
@@ -19,6 +20,7 @@ class EntryController extends Controller
      */
     public function index(): void
     {
+        EntryWorkflow::ensureSchema();
         $companyIds = Auth::companyIds();
         $entries = $companyIds === null
             ? Entry::getAll()
@@ -161,45 +163,85 @@ class EntryController extends Controller
      */
     public function show(string $id): void
     {
+        EntryWorkflow::ensureSchema();
         $entry = Entry::findWithLines((int) $id);
 
-        if (!$entry) {
+        if (!$entry || !EntryWorkflow::companyAllowed((int) $entry['company_id'])) {
             $this->renderError(404);
             return;
         }
 
+        $lines = $entry['lines'] instanceof \PDOStatement ? $entry['lines']->fetchAll(\PDO::FETCH_ASSOC) : (array) $entry['lines'];
+
         $this->view('accounting.entries.show', [
-            'entry' => $entry
+            'entry' => $entry,
+            'lines' => $lines,
+            'workflowRequired' => EntryWorkflow::required(),
+            'canApprove' => EntryWorkflow::canApprove(),
         ]);
     }
 
     /**
-     * Valider une écriture comptable.
+     * Valider (approuver) une écriture comptable.
      */
     public function validate(string $id): void
     {
+        $entry = $this->workflowEntry($id);
+        if (!$entry) {
+            return;
+        }
+
+        $r = EntryWorkflow::approve($entry);
+        Session::set($r['ok'] ? 'success' : 'error', $r['message']);
+        $this->redirect(url('accounting/entries/' . (int) $id));
+    }
+
+    /**
+     * Soumettre une écriture à l'approbation d'un responsable.
+     */
+    public function submit(string $id): void
+    {
+        $entry = $this->workflowEntry($id);
+        if (!$entry) {
+            return;
+        }
+
+        $r = EntryWorkflow::submit($entry);
+        Session::set($r['ok'] ? 'success' : 'error', $r['message']);
+        $this->redirect(url('accounting/entries/' . (int) $id));
+    }
+
+    /**
+     * Rejeter une écriture soumise (motif obligatoire).
+     */
+    public function reject(string $id): void
+    {
+        $entry = $this->workflowEntry($id);
+        if (!$entry) {
+            return;
+        }
+
+        $r = EntryWorkflow::reject($entry, (string) ($_POST['comment'] ?? ''));
+        Session::set($r['ok'] ? 'success' : 'error', $r['message']);
+        $this->redirect(url('accounting/entries/' . (int) $id));
+    }
+
+    private function workflowEntry(string $id): ?array
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect(url('accounting/entries/' . (int) $id));
+            return null;
+        }
+
+        EntryWorkflow::ensureSchema();
         $entry = Entry::findById((int) $id);
 
-        if (!$entry) {
+        if (!$entry || !EntryWorkflow::companyAllowed((int) $entry['company_id'])) {
             $this->renderError(404);
-            return;
+            return null;
         }
 
-        if ($entry['status'] !== ENTRY_DRAFT) {
-            Session::set('error', 'Seules les écritures en brouillon peuvent être validées.');
-            $this->redirect(url('accounting/entries/' . $id));
-            return;
-        }
-
-        if (!Entry::updateStatus((int) $id, ENTRY_VALIDATED)) {
-            Session::set('error', 'Impossible de valider cette écriture.');
-            $this->redirect(url('accounting/entries/' . $id));
-            return;
-        }
-
-        Session::set('success', 'Écriture comptable validée avec succès.');
-
-        $this->redirect(url('accounting/entries/' . $id));
+        return $entry;
     }
 
     /**
@@ -207,10 +249,15 @@ class EntryController extends Controller
      */
     public function cancel(string $id): void
     {
-        $entry = Entry::findById((int) $id);
+        $entry = $this->workflowEntry($id);
 
         if (!$entry) {
-            $this->renderError(404);
+            return;
+        }
+
+        if (EntryWorkflow::required() && !EntryWorkflow::canApprove()) {
+            Session::set('error', 'Seul un responsable peut annuler une écriture lorsque l’approbation est obligatoire.');
+            $this->redirect(url('accounting/entries/' . (int) $id));
             return;
         }
 

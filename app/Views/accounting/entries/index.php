@@ -94,6 +94,11 @@
                                         <span class="badge <?= $statusClasses[$status] ?? 'bg-secondary' ?>">
                                             <?= e($statusLabels[$status] ?? $status) ?>
                                         </span>
+                                        <?php if ($status === ENTRY_DRAFT && ($entry['approval_state'] ?? '') === 'submitted'): ?>
+                                            <span class="badge bg-info text-dark">En attente d’approbation</span>
+                                        <?php elseif ($status === ENTRY_DRAFT && ($entry['approval_state'] ?? '') === 'rejected'): ?>
+                                            <span class="badge bg-danger">Rejetée</span>
+                                        <?php endif; ?>
 
                                     </td>
 

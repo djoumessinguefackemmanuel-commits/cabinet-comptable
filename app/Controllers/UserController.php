@@ -25,6 +25,7 @@ class UserController extends Controller
             return;
         }
 
+        \App\Services\EntryWorkflow::ensureSchema();
         $users = User::getAll();
 
         $this->view('admin.users.index', [
@@ -300,6 +301,25 @@ class UserController extends Controller
     /**
      * Modifier le statut d'un utilisateur.
      */
+    public function toggleApprover(string $id): void
+    {
+        if (!$this->ensureAdmin()) {
+            return;
+        }
+
+        $user = User::findById((int) $id);
+        if (!$user) {
+            $this->renderError(404);
+            return;
+        }
+
+        $on = ($_POST['can_approve'] ?? '0') === '1';
+        \App\Services\EntryWorkflow::setUserCanApprove((int) $id, $on);
+        \App\Services\AuditService::log('update', 'user', (int) $id, ($on ? 'Droit d’approbation accordé' : 'Droit d’approbation retiré') . ' : ' . ($user['email'] ?? ''));
+        Session::set('success', $on ? 'Cet utilisateur peut maintenant approuver les écritures.' : 'Droit d’approbation retiré.');
+        $this->redirect(url('users'));
+    }
+
     public function updateStatus(string $id): void
     {
         if (!$this->ensureAdmin()) {

@@ -42,6 +42,46 @@ $statusClasses = [
 
     </div>
 
+
+    <?php
+    $state = $entry['approval_state'] ?? '';
+    $isDraft = $status === ENTRY_DRAFT;
+    $workflowRequired = $workflowRequired ?? false;
+    $canApprove = $canApprove ?? false;
+    $eid = (int) $entry['id'];
+    ?>
+    <?php if (!empty($entry['review_comment']) && $state === 'rejected'): ?>
+        <div class="alert alert-danger"><strong>Motif du rejet :</strong> <?= e($entry['review_comment']) ?></div>
+    <?php endif; ?>
+
+    <?php if ($status !== ENTRY_CANCELLED): ?>
+    <div class="card shadow-sm border-0 mb-4"><div class="card-body d-flex flex-wrap gap-2 align-items-start">
+        <?php if ($isDraft && $state !== 'submitted' && $workflowRequired && !$canApprove): ?>
+            <form method="POST" action="<?= url('accounting/entries/' . $eid . '/submit') ?>"><?= csrfField() ?>
+                <button class="btn btn-primary" type="submit"><i class="fas fa-paper-plane me-1"></i> Soumettre pour approbation</button></form>
+        <?php endif; ?>
+
+        <?php if ($isDraft && (!$workflowRequired || $canApprove)): ?>
+            <form method="POST" action="<?= url('accounting/entries/' . $eid . '/validate') ?>"><?= csrfField() ?>
+                <button class="btn btn-success" type="submit"><i class="fas fa-check me-1"></i> Valider l’écriture</button></form>
+        <?php endif; ?>
+
+        <?php if ($isDraft && $state === 'submitted'): ?>
+            <?php if (!$canApprove): ?><span class="text-muted align-self-center">En attente de l’approbation d’un responsable.</span><?php endif; ?>
+            <?php if ($canApprove): ?>
+            <form method="POST" action="<?= url('accounting/entries/' . $eid . '/reject') ?>" class="d-flex flex-wrap gap-2"><?= csrfField() ?>
+                <input class="form-control" style="min-width:240px" type="text" name="comment" maxlength="1000" placeholder="Motif du rejet (obligatoire)" required>
+                <button class="btn btn-outline-danger" type="submit"><i class="fas fa-times me-1"></i> Rejeter</button></form>
+            <?php endif; ?>
+        <?php endif; ?>
+
+        <?php if (($canApprove ?? false) || !$workflowRequired): ?>
+            <form method="POST" action="<?= url('accounting/entries/' . $eid . '/cancel') ?>" onsubmit="return confirm('Annuler cette écriture ?')"><?= csrfField() ?>
+                <button class="btn btn-outline-secondary" type="submit"><i class="fas fa-ban me-1"></i> Annuler l’écriture</button></form>
+        <?php endif; ?>
+    </div></div>
+    <?php endif; ?>
+
     <div class="card shadow-sm border-0 mb-4">
 
         <div class="card-header bg-white py-3">
@@ -90,6 +130,11 @@ $statusClasses = [
                         <span class="badge <?= $statusClasses[$status] ?? 'bg-secondary' ?>">
                             <?= e($statusLabels[$status] ?? $status) ?>
                         </span>
+                        <?php if ($status === ENTRY_DRAFT && ($entry['approval_state'] ?? '') === 'submitted'): ?>
+                            <span class="badge bg-info text-dark">En attente d’approbation</span>
+                        <?php elseif ($status === ENTRY_DRAFT && ($entry['approval_state'] ?? '') === 'rejected'): ?>
+                            <span class="badge bg-danger">Rejetée</span>
+                        <?php endif; ?>
                     </p>
 
                 </div>

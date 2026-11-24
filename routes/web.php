@@ -92,6 +92,7 @@ $router->get('/users/create', [UserController::class, 'create']);
 $router->post('/users/store', [UserController::class, 'store']);
 $router->get('/users/{id}/edit', [UserController::class, 'edit']);
 $router->post('/users/{id}/update', [UserController::class, 'update']);
+$router->post('/users/{id}/approver', [UserController::class, 'toggleApprover']);
 $router->post('/users/{id}/status', [UserController::class, 'updateStatus']);
 $router->post('/users/{id}/reset-password', [UserController::class, 'resetPassword']);
 $router->post('/users/{id}/delete', [UserController::class, 'delete']);
@@ -158,6 +159,8 @@ $router->get('/accounting/entries/create', [EntryController::class, 'create']);
 $router->post('/accounting/entries/store', [EntryController::class, 'store']);
 $router->post('/accounting/entries', [EntryController::class, 'store']);
 $router->get('/accounting/entries/{id}', [EntryController::class, 'show']);
+$router->post('/accounting/entries/{id}/submit', [EntryController::class, 'submit']);
+$router->post('/accounting/entries/{id}/reject', [EntryController::class, 'reject']);
 $router->post('/accounting/entries/{id}/validate', [EntryController::class, 'validate']);
 $router->post('/accounting/entries/{id}/cancel', [EntryController::class, 'cancel']);
 
@@ -252,6 +255,7 @@ $router->post('/platform/tenants/{id}/toggle', [PlatformController::class, 'togg
 $router->get('/audit', [AuditController::class, 'index']);
 
 $router->get('/settings', [SettingController::class, 'index']);
+$router->post('/settings/workflow', [SettingController::class, 'workflow']);
 $router->post('/settings/update', [SettingController::class, 'update']);
 
 $router->get('/admin/support', [SupportController::class, 'index']);

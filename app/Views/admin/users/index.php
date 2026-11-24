@@ -31,6 +31,15 @@
                                     <a class="btn btn-sm btn-outline-primary" href="<?= url('users/' . (int) $user['id'] . '/edit') ?>">
                                         <i class="fas fa-edit me-1"></i> Modifier
                                     </a>
+                                    <?php if (!in_array($user['role_name'] ?? '', ['admin', 'expert', 'client'], true)): ?>
+                                        <form method="POST" action="<?= url('users/' . (int) $user['id'] . '/approver') ?>">
+                                            <?= csrfField() ?>
+                                            <input type="hidden" name="can_approve" value="<?= !empty($user['can_approve']) ? '0' : '1' ?>">
+                                            <button class="btn btn-sm <?= !empty($user['can_approve']) ? 'btn-success' : 'btn-outline-secondary' ?>" type="submit" title="Droit d’approuver les écritures">
+                                                <i class="fas fa-user-check me-1"></i> <?= !empty($user['can_approve']) ? 'Approbateur' : 'Peut approuver ?' ?>
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
                                     <?php if ((int) $user['id'] !== \App\Core\Auth::id()): ?>
                                         <form class="d-flex align-items-center gap-1" method="POST" action="<?= url('users/' . (int) $user['id'] . '/status') ?>">
                                             <?= csrfField() ?>

@@ -16,8 +16,23 @@ class SettingController extends Controller
         $settings = Setting::getAll();
 
         $this->view('admin.settings.index', [
+            'workflowRequired' => \App\Services\EntryWorkflow::required(),
             'settings' => $settings
         ]);
+    }
+
+    /**
+     * Activer ou non l'approbation obligatoire des écritures.
+     */
+    public function workflow(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $on = ($_POST['require_approval'] ?? '0') === '1';
+            \App\Services\EntryWorkflow::setRequired($on);
+            \App\Services\AuditService::log('update', 'setting', null, 'Approbation des écritures : ' . ($on ? 'obligatoire' : 'facultative'));
+            Session::set('success', $on ? 'Approbation obligatoire activée.' : 'Approbation obligatoire désactivée.');
+        }
+        $this->redirect(url('settings'));
     }
 
     /**
