@@ -26,6 +26,15 @@ class CsrfMiddleware
             || !hash_equals($sessionToken, $requestToken)
         ) {
 
+            // Page de connexion restée ouverte (application installée, onglet en veille) : jeton expiré.
+            // On renvoie vers un formulaire neuf avec un message clair plutôt qu'une page d'erreur.
+            $path = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
+            if (preg_match('#/login/?$#', $path) === 1) {
+                $_SESSION['login_notice'] = 'Votre page de connexion avait expiré. Saisissez de nouveau vos identifiants.';
+                header('Location: ' . url('login'));
+                exit;
+            }
+
             http_response_code(419);
 
             echo 'Erreur 419 : La session a expiré ou le jeton de sécurité est invalide.';

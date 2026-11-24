@@ -27,8 +27,11 @@ class AuthController extends Controller
             return;
         }
 
+        $notice = Session::getFlash('login_notice');
+
         $this->render('auth.login', [
-            'title' => 'Connexion'
+            'title' => 'Connexion',
+            'errors' => $notice ? [$notice] : []
         ], 'layouts.auth');
     }
 

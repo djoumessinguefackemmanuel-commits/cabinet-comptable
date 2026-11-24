@@ -1,7 +1,7 @@
-/* Service worker — cabinet-v1
+/* Service worker — cabinet-v2
  * Mis en cache : uniquement les fichiers statiques (/assets/) et la page hors ligne.
  * Les pages de l'application (données comptables, sessions) ne sont JAMAIS mises en cache. */
-const VERSION = 'cabinet-v1';
+const VERSION = 'cabinet-v2';
 const STATIC_CACHE = VERSION + '-static';
 const OFFLINE_URL = '/offline.html';
 const PRECACHE = [OFFLINE_URL, '/assets/favicon.svg', '/assets/icons/icon-192.png', '/assets/css/bootstrap.min.css', '/assets/css/style.css'];
@@ -23,6 +23,9 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
+
+  // Connexion et authentification : jamais interceptées par le service worker.
+  if (/^\/(login|logout|forgot-password|reset-password|set-password)/.test(url.pathname)) return;
 
   // Pages : toujours le réseau ; hors ligne -> page dédiée.
   if (req.mode === 'navigate') {

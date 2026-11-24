@@ -3,6 +3,15 @@
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function () {}); });
   }
+  // Page de connexion restée ouverte longtemps : on la recharge au retour pour avoir un jeton valide.
+  if (/\/login\/?$/.test(location.pathname)) {
+    var hiddenAt = 0;
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) { hiddenAt = Date.now(); }
+      else if (hiddenAt && Date.now() - hiddenAt > 10 * 60 * 1000) { location.reload(); }
+    });
+    window.addEventListener('pageshow', function (e) { if (e.persisted) { location.reload(); } });
+  }
   var standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
   var KEY = 'pwa-banner-dismissed';
   function dismissed() { try { return localStorage.getItem(KEY) === '1'; } catch (e) { return false; } }
